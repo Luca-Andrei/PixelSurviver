@@ -54,6 +54,16 @@ add_executable(${PROJECT_NAME}
     main.cpp
     generated/src/Helper.cpp
     env_fixes.h
+        generated/include/Entity.cpp
+        generated/include/Entity.h
+        generated/include/Player.cpp
+        generated/include/Player.h
+        generated/include/Enemy.cpp
+        generated/include/Enemy.h
+        generated/include/Boss.cpp
+        generated/include/Boss.h
+        generated/include/WaveManager.cpp
+        generated/include/WaveManager.h
 )
 
 include(cmake/CompilerFlags.cmake)
