@@ -1,4 +1,4 @@
-// WaveManager.h
+
 #ifndef WAVEMANAGER_H
 #define WAVEMANAGER_H
 
