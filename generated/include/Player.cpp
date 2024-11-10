@@ -25,10 +25,6 @@ void Player::attack() {
     std::cout << "Player attacks!" << std::endl;
 }
 
-void Player::update(float deltaTime) {
-    // Update logic here (could include player movement based on input)
-}
-
 std::ostream &operator<<(std::ostream &out, const Player &player) {
     out << "Player Health: " << player.health << ", Score: " << player.score;
     return out;
