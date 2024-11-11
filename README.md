@@ -1,4 +1,6 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
+# Pixel Surviver
+
+Acesta este un joc inspirat dupa jocul Vampire Survivors. Scopul este sa se colecteze puncte de experienta si sa se imbunatateasca abilitatile eroului pe parcursul unor nivele care dureaza 15 minute impartite in wave-uri cu monstri si bosi din 5 in 5 minute.
 
 ### Important!
 Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
