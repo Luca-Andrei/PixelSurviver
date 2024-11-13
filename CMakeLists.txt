@@ -39,7 +39,6 @@ FetchContent_MakeAvailable(SFML)
 
 ###############################################################################
 
-# external dependencies with find_package
 
 find_package(Threads REQUIRED)
 if(APPLE)
@@ -49,21 +48,17 @@ endif()
 
 ###############################################################################
 
-# NOTE: update executable name in .github/workflows/cmake.yml:25 when changing name here
 add_executable(${PROJECT_NAME}
     main.cpp
     generated/src/Helper.cpp
     env_fixes.h
-        generated/include/Entity.cpp
-        generated/include/Entity.h
-        generated/include/Player.cpp
-        generated/include/Player.h
-        generated/include/Enemy.cpp
-        generated/include/Enemy.h
-        generated/include/Boss.cpp
-        generated/include/Boss.h
-        generated/include/WaveManager.cpp
-        generated/include/WaveManager.h
+        include/Hero.cpp
+        include/Monster.cpp
+        include/Monster.h
+        include/Game.cpp
+        include/Game.h
+        include/Game.cpp
+        include/Hero.h
 )
 
 include(cmake/CompilerFlags.cmake)
@@ -104,6 +99,3 @@ endif()
 
 
 include(cmake/CopyHelper.cmake)
-copy_files(FILES tastatura.txt)
-# copy_files(FILES tastatura.txt config.json DIRECTORY images sounds)
-# copy_files(DIRECTORY images sounds)
