@@ -11,7 +11,6 @@ public:
 
     void move(float offsetX, float offsetY);
     void takeDamage(int damage);
-    void autoAttack();
     bool isAlive() const { return health > 0; }
 
     sf::Sprite& getSprite() { return sprite; }
