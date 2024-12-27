@@ -80,6 +80,7 @@ void Hero::setPosition(float x, float y) {
 void Hero::reset() {
     health = 100;
     xp.resetXP();
+    xp.resetLevel();
     std::cout << "Hero died, everything reset to level 1!" << std::endl;
 }
 
