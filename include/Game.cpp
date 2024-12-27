@@ -13,7 +13,7 @@ Game::Game()
         std::cerr << "Error loading hero texture!" << std::endl;
     }
 
-    hero = Hero(heroTexture, 100, 10);
+    hero = Hero(heroTexture, 100);
 
     std::cout << "Hero texture loaded successfully!" << std::endl;
 
@@ -252,7 +252,7 @@ void Game::render() {
 }
 
 void Game::restartGame() {
-    hero = Hero(heroTexture, 100, 10);
+    hero = Hero(heroTexture, 100);
     monsters.clear();
     fireballs.clear();
     gameOver = false;

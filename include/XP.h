@@ -5,8 +5,6 @@ class XP {
 public:
     explicit XP(int startingXP = 0);
 
-    void gainXP(int amount);
-
     [[nodiscard]] int getXP() const;
 
 private:

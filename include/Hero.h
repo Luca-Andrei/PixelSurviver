@@ -7,7 +7,7 @@ class Hero {
 public:
     Hero();
 
-    Hero(const sf::Texture &texture, int health, int power);
+    Hero(const sf::Texture &texture, int health);
 
     void move(float offsetX, float offsetY);
 
