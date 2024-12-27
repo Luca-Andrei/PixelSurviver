@@ -9,6 +9,8 @@ public:
 
     Hero(const sf::Texture &texture, int health);
 
+    ~Hero();
+
     void move(float offsetX, float offsetY);
 
     void takeDamage(int damage);

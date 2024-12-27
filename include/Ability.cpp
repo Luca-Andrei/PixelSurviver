@@ -67,3 +67,12 @@ void Ability::draw(sf::RenderWindow &window) const {
     if (!active) return;
     window.draw(sprites[static_cast<std::size_t>(currentFrame)]);
 }
+
+Ability::~Ability() {
+    textures.clear();
+
+    sprites.clear();
+
+    currentFrame = 0;
+    active = false;
+}

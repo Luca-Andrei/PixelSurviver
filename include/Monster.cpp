@@ -86,3 +86,13 @@ void Monster::vibrateAttack() {
         vibrateCooldown.restart();
     }
 }
+
+Monster::~Monster() {
+    health = 0;
+    power = 0;
+    isDead = true;
+
+    sprite = sf::Sprite();
+
+    lastDirection = sf::Vector2f(0.0f, 0.0f);
+}

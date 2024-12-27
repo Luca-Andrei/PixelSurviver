@@ -9,6 +9,8 @@ class Ability {
 public:
     Ability(const std::vector<std::string> &textureFiles, float animationSpeed);
 
+    ~Ability();
+
     void trigger(const sf::Vector2f &position);
 
     void update();

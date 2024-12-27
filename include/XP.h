@@ -5,6 +5,8 @@ class XP {
 public:
     explicit XP(int startingXP = 0);
 
+    ~XP();
+
     [[nodiscard]] int getXP() const;
 
 private:

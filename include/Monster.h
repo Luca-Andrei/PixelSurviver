@@ -11,6 +11,8 @@ public:
 
     Monster(const sf::Texture &texture, int health, int power);
 
+    ~Monster();
+
     void moveTowards(const sf::Vector2f &target, float deltaTime);
 
     void attack(Hero &hero);

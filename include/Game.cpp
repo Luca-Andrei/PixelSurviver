@@ -63,7 +63,7 @@ Game::Game()
 
     timerText.setCharacterSize(24);
     timerText.setFillColor(sf::Color::White);
-    timerText.setPosition(static_cast<float>(window.getSize().x) - 200.f, 10.f);
+    timerText.setPosition(static_cast<float>(window.getSize().x) - 10.f, static_cast<float>(window.getSize().y));
 
     std::cout << "Timer started successfully!" << std::endl;
 }
@@ -233,7 +233,6 @@ void Game::render() {
         cooldownProgress.setPosition(abilityContainer.getPosition().x,
                                      abilityContainer.getPosition().y + (
                                          abilityContainer.getSize().y - cooldownProgress.getSize().y));
-
         window.draw(cooldownProgress);
     }
 
@@ -311,4 +310,38 @@ std::vector<std::string> Game::loadFireballTextures() {
         fireballTextures.push_back(fileName);
     }
     return fireballTextures;
+}
+
+Game::~Game() {
+    std::cout << "Game class is being destroyed!" << std::endl;
+
+    heroTexture = sf::Texture();
+    std::cout << "Hero texture deinitialized." << std::endl;
+
+    monsterTexture = sf::Texture();
+    monsters.clear();
+    std::cout << "Monster texture deinitialized and monsters cleared." << std::endl;
+
+    restartTexture = sf::Texture();
+    restartButton = sf::RectangleShape();
+    std::cout << "Restart button texture deinitialized and reset." << std::endl;
+
+    fireballIconTexture = sf::Texture();
+    fireballs.clear();
+    std::cout << "Fireball icon texture deinitialized and fireballs cleared." << std::endl;
+
+    xpBar = sf::RectangleShape();
+    xpFill = sf::RectangleShape();
+    std::cout << "XP bar and fill cleared." << std::endl;
+
+    abilityContainer = sf::RectangleShape();
+    timerText = sf::Text();
+    std::cout << "Ability container and timer text cleared." << std::endl;
+
+    if (window.isOpen()) {
+        window.close();
+    }
+    std::cout << "Window closed." << std::endl;
+
+    std::cout << "Game class cleanup complete!" << std::endl;
 }

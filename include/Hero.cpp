@@ -38,3 +38,15 @@ void Hero::addXP(int amount) {
 void Hero::draw(sf::RenderWindow &window) const {
     window.draw(sprite);
 }
+
+Hero::~Hero() {
+    std::cout << "Hero class is being destroyed!" << std::endl;
+
+    health = 0;
+    level = 1;
+    xp = 0;
+
+    sprite = sf::Sprite();
+
+    std::cout << "Hero class cleanup complete!" << std::endl;
+}
