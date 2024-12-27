@@ -7,13 +7,21 @@
 
 class Ability {
 public:
-    Ability(const std::vector<std::string>& textureFiles, float animationSpeed);
-    void trigger(const sf::Vector2f& position);
+    Ability(const std::vector<std::string> &textureFiles, float animationSpeed);
+
+    void trigger(const sf::Vector2f &position);
+
     void update();
-    bool isActive() const;
+
+    [[nodiscard]] bool isActive() const;
+
     void deactivate();
-    void checkCollisionWithMonsters(std::vector<Monster>& monsters);
-    void draw(sf::RenderWindow& window);
+
+    void checkCollisionWithMonsters(std::vector<Monster> &monsters) const;
+
+    void draw(sf::RenderWindow &window) const;
+
+    static void dealDamage(Monster &monster);
 
 private:
     std::vector<sf::Texture> textures;
@@ -23,8 +31,6 @@ private:
     bool active;
     sf::Vector2f position;
     sf::Clock animationClock;
-
-    void dealDamage(Monster& monster);
 };
 
 #endif

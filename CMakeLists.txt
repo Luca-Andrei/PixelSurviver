@@ -61,6 +61,9 @@ add_executable(${PROJECT_NAME}
         include/Hero.h
         include/Ability.cpp
         include/Ability.h
+        include/XP.cpp
+        include/XP.h
+        include/XP.cpp
 )
 
 include(cmake/CompilerFlags.cmake)

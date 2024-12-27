@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-Monster::Monster(const std::string& textureFile, int health, int power)
+Monster::Monster(const std::string &textureFile, int health, int power)
     : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sf::Texture texture;
     if (!texture.loadFromFile(textureFile)) {
@@ -11,13 +11,13 @@ Monster::Monster(const std::string& textureFile, int health, int power)
     sprite.setTexture(texture);
 }
 
-Monster::Monster(const sf::Texture& texture, int health, int power)
+Monster::Monster(const sf::Texture &texture, int health, int power)
     : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sprite.setTexture(texture);
     sprite.setScale(0.08f, 0.08f);
 }
 
-void Monster::moveTowards(const sf::Vector2f& target, float deltaTime) {
+void Monster::moveTowards(const sf::Vector2f &target, float deltaTime) {
     if (isDead) return;
 
     sf::Vector2f direction = target - sprite.getPosition();
@@ -30,15 +30,16 @@ void Monster::moveTowards(const sf::Vector2f& target, float deltaTime) {
     }
 }
 
-void Monster::attack(Hero& hero) {
+void Monster::attack(Hero &hero) {
     if (isDead) return;
 
     float attackRange = 5.0f;
 
-    float distance = std::sqrt(
+    auto distance = std::sqrt(
         std::pow(sprite.getPosition().x - hero.getSprite().getPosition().x, 2) +
         std::pow(sprite.getPosition().y - hero.getSprite().getPosition().y, 2)
     );
+
 
     if (distance <= attackRange) {
         if (attackCooldown.getElapsedTime().asSeconds() > 0.5f) {
@@ -63,11 +64,12 @@ void Monster::takeDamage(int damage) {
     }
 }
 
-void Monster::draw(sf::RenderWindow& window) {
+void Monster::draw(sf::RenderWindow &window) const {
     if (!isDead) {
         window.draw(sprite);
     }
 }
+
 
 bool Monster::getIsDead() const {
     return isDead;
@@ -84,4 +86,3 @@ void Monster::vibrateAttack() {
         vibrateCooldown.restart();
     }
 }
-
