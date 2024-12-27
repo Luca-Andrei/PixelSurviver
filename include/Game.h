@@ -24,6 +24,7 @@ public:
     void restartGame();
 
 private:
+    sf::View cameraView;
     sf::Clock gameClock;
     sf::Text timerText;
     sf::RenderWindow window;

@@ -6,7 +6,7 @@
 #include "Error.h"
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "PixelSurvivor"),
+    : window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
       gameOver(false) {
     try {
         std::cout << "Game has started!" << std::endl;
@@ -16,6 +16,10 @@ Game::Game()
         }
 
         hero = Hero(heroTexture, 100);
+
+        hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - hero.getSprite().getGlobalBounds().width / 2,
+                         static_cast<float>(window.getSize().y) / 2.f - hero.getSprite().getGlobalBounds().height / 2);
+
         std::cout << "Hero texture loaded successfully!" << std::endl;
 
         if (!monsterTexture.loadFromFile("assets/monster_texture.png")) {
@@ -41,7 +45,7 @@ Game::Game()
 
         abilityContainer.setSize(sf::Vector2f(fireballIconSprite.getTexture()->getSize()));
         abilityContainer.setPosition(sf::Vector2f(10.0f, 10.0f));
-        abilityContainer.setFillColor(sf::Color(0, 0, 0, 150));
+        abilityContainer.setFillColor(sf::Color(0, 0, 0, 80));
         abilityContainer.setOutlineThickness(2.f);
         abilityContainer.setOutlineColor(sf::Color::White);
         std::cout << "Ability container created successfully!" << std::endl;
@@ -60,6 +64,12 @@ Game::Game()
         timerText.setFillColor(sf::Color::White);
         timerText.setPosition(static_cast<float>(window.getSize().x) - 10.f, static_cast<float>(window.getSize().y));
         std::cout << "Timer started successfully!" << std::endl;
+
+        cameraView.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
+        cameraView.setCenter(hero.getPosition().x + hero.getSprite().getGlobalBounds().width / 2,
+                             hero.getPosition().y + hero.getSprite().getGlobalBounds().height / 2);
+        window.setView(cameraView);
+
     } catch (const TextureLoadError &e) {
         std::cerr << e.what() << std::endl;
         exit(1);
@@ -130,6 +140,10 @@ void Game::update(float deltaTime) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             hero.move(200 * deltaTime, 0);
         }
+
+        cameraView.setCenter(hero.getPosition().x + hero.getSprite().getGlobalBounds().width / 2,
+                             hero.getPosition().y + hero.getSprite().getGlobalBounds().height / 2);
+        window.setView(cameraView);
 
         if (spawnClock.getElapsedTime().asSeconds() >= 5.0f) {
             spawnMonsters();
@@ -219,19 +233,9 @@ void Game::render() {
     try {
         window.clear(sf::Color(128, 0, 128));
 
-        window.draw(timerText);
+        window.setView(cameraView);
 
-        window.draw(abilityContainer);
-        hero.draw(window);
         drawHealthBars();
-
-        sf::RectangleShape xpBorder(sf::Vector2f(xpBar.getSize().x + 4.f, xpBar.getSize().y + 4.f));
-        xpBorder.setPosition(xpBar.getPosition().x - 2.f, xpBar.getPosition().y - 2.f);
-        xpBorder.setFillColor(sf::Color::White);
-
-        window.draw(xpBorder);
-        window.draw(xpBar);
-        window.draw(xpFill);
 
         for (const auto &monster: monsters) {
             monster.draw(window);
@@ -241,21 +245,32 @@ void Game::render() {
             fireball.draw(window);
         }
 
+        hero.draw(window);
+
+        window.setView(window.getDefaultView());
+
         fireballIconSprite.setPosition(abilityContainer.getPosition());
         window.draw(fireballIconSprite);
 
         if (fireballCooldown.getElapsedTime().asSeconds() < 5.f) {
             float cooldownTimeLeft = 5.f - fireballCooldown.getElapsedTime().asSeconds();
-
             float progress = cooldownTimeLeft / 5.f;
+
             sf::RectangleShape cooldownProgress(sf::Vector2f(abilityContainer.getSize().x,
                                                              abilityContainer.getSize().y * progress));
             cooldownProgress.setFillColor(sf::Color(255, 0, 0, 200));
+
             cooldownProgress.setPosition(abilityContainer.getPosition().x,
-                                         abilityContainer.getPosition().y + (
-                                             abilityContainer.getSize().y - cooldownProgress.getSize().y));
+                                         abilityContainer.getPosition().y +
+                                         (abilityContainer.getSize().y - cooldownProgress.getSize().y));
+
             window.draw(cooldownProgress);
         }
+
+        window.draw(timerText);
+        window.draw(abilityContainer);
+        window.draw(xpBar);
+        window.draw(xpFill);
 
         if (gameOver) {
             sf::Text gameOverText;
@@ -274,9 +289,12 @@ void Game::render() {
     }
 }
 
+
 void Game::restartGame() {
     try {
         hero = Hero(heroTexture, 100);
+        hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - hero.getSprite().getGlobalBounds().width / 2,
+                         static_cast<float>(window.getSize().y) / 2.f - hero.getSprite().getGlobalBounds().height / 2);
         monsters.clear();
         fireballs.clear();
         gameOver = false;
@@ -310,8 +328,7 @@ void Game::drawHealthBars() {
         for (auto &monster: monsters) {
             if (monster.getIsDead()) continue;
 
-            float monsterHealthPercentage = static_cast<float>(monster.getHealth()) / static_cast<float>(monster.
-                                                getMaxHealth());
+            float monsterHealthPercentage = static_cast<float>(monster.getHealth()) / static_cast<float>(monster.getMaxHealth());
             float monsterLostHealthPercentage = 1.0f - monsterHealthPercentage;
 
             sf::RectangleShape monsterGreenHealthBar(sf::Vector2f(50.f * monsterHealthPercentage, 5.f));
@@ -338,8 +355,7 @@ std::vector<std::string> Game::loadFireballTextures() {
     try {
         std::vector<std::string> fireballTextures;
         for (int i = 1; i <= 12; ++i) {
-            std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) +
-                                   ".png";
+            std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) + ".png";
             fireballTextures.push_back(fileName);
         }
         return fireballTextures;
@@ -370,19 +386,8 @@ Game::~Game() {
 
         xpBar = sf::RectangleShape();
         xpFill = sf::RectangleShape();
-        std::cout << "XP bar and fill cleared." << std::endl;
-
-        abilityContainer = sf::RectangleShape();
-        timerText = sf::Text();
-        std::cout << "Ability container and timer text cleared." << std::endl;
-
-        if (window.isOpen()) {
-            window.close();
-        }
-        std::cout << "Window closed." << std::endl;
-
-        std::cout << "Game class cleanup complete!" << std::endl;
+        std::cout << "XP textures dropped." << std::endl;
     } catch (const std::exception &e) {
-        std::cerr << "Error during cleanup: " << e.what() << std::endl;
+        std::cerr << "Error cleaning up resources: " << e.what() << std::endl;
     }
 }

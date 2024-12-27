@@ -73,6 +73,10 @@ void Hero::takeDamage(int damage) {
     }
 }
 
+void Hero::setPosition(float x, float y) {
+    sprite.setPosition(x, y);
+}
+
 Hero::~Hero() {
     try {
         std::cout << "Hero is being destroyed!" << std::endl;

@@ -19,6 +19,8 @@ public:
 
     void takeDamage(int damage);
 
+    void setPosition(float x, float y);
+
     bool isAlive() const { return health > 0; }
 
     int getHealth() const { return health; }
