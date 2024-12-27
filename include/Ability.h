@@ -15,8 +15,6 @@ public:
 
     [[nodiscard]] bool isActive() const;
 
-    void deactivate();
-
     void checkCollisionWithMonsters(std::vector<Monster> &monsters) const;
 
     void draw(sf::RenderWindow &window) const;

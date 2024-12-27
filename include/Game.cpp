@@ -6,7 +6,7 @@
 
 Game::Game()
     : window(sf::VideoMode(800, 600), "PixelSurvivor"),
-      gameOver(false), event() {
+      gameOver(false) {
     std::cout << "Game has started!" << std::endl;
 
     if (!heroTexture.loadFromFile("assets/hero_texture.png")) {
@@ -212,11 +212,11 @@ void Game::render() {
     window.draw(xpFill);
 
 
-    for (auto &monster: monsters) {
+    for (const auto &monster: monsters) {
         monster.draw(window);
     }
 
-    for (auto &fireball: fireballs) {
+    for (const auto &fireball: fireballs) {
         fireball.draw(window);
     }
 

@@ -1,11 +1,8 @@
 #include "Hero.h"
 #include <iostream>
 
-Hero::Hero() : power(10) {
-}
-
 Hero::Hero(const sf::Texture &texture, int health, int power)
-    : health(health), power(power) {
+    : health(health) {
     sprite.setTexture(texture);
     sprite.setScale(0.05f, 0.05f);
 }

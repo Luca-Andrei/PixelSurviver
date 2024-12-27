@@ -49,10 +49,6 @@ bool Ability::isActive() const {
     return active;
 }
 
-void Ability::deactivate() {
-    active = false;
-}
-
 void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) const {
     if (!active || currentFrame != static_cast<float>(sprites.size()) / 2.0f) return;
 

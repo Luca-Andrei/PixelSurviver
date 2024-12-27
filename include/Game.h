@@ -42,8 +42,6 @@ private:
     sf::Sprite fireballIconSprite;
     sf::RectangleShape abilityContainer;
 
-    sf::Event event;
-
     sf::RectangleShape xpBar;
     sf::RectangleShape xpFill;
 

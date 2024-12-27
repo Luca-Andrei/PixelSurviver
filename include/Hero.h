@@ -33,7 +33,6 @@ public:
 private:
     int maxHealth = 100;
     int health = 100;
-    int power;
     int xp = 0;
     int level = 1;
     sf::Sprite sprite;
