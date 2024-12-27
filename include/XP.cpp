@@ -1,15 +1,24 @@
 #include "XP.h"
 #include <iostream>
 
-XP::XP(int startingXP) : xp(startingXP) {
+XP::XP(int maxXP) : xp(0), maxXP(maxXP), level(1) {
 }
 
-int XP::getXP() const {
-    return xp;
+void XP::addXP(int amount) {
+    xp += amount;
+    if (xp >= maxXP) {
+        levelUp();
+    }
 }
 
-XP::~XP() {
-    std::cout << "XP class is being destroyed! Current XP: " << xp << std::endl;
+void XP::resetXP() {
     xp = 0;
-    std::cout << "XP class has been destroyed! Current XP: " << xp << std::endl;
+}
+
+void XP::levelUp() {
+    if (xp >= maxXP) {
+        level++;
+        xp = 0;
+        std::cout << "XP Level Up! New level: " << level << std::endl;
+    }
 }

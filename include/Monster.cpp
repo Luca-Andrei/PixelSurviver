@@ -3,7 +3,7 @@
 #include <cmath>
 
 Monster::Monster(const std::string &textureFile, int health, int power)
-    : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
+    : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sf::Texture texture;
     if (!texture.loadFromFile(textureFile)) {
         std::cerr << "Error loading monster texture!" << std::endl;
@@ -12,7 +12,7 @@ Monster::Monster(const std::string &textureFile, int health, int power)
 }
 
 Monster::Monster(const sf::Texture &texture, int health, int power)
-    : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
+    : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sprite.setTexture(texture);
     sprite.setScale(0.08f, 0.08f);
 }
@@ -39,7 +39,6 @@ void Monster::attack(Hero &hero) {
         std::pow(sprite.getPosition().x - hero.getSprite().getPosition().x, 2) +
         std::pow(sprite.getPosition().y - hero.getSprite().getPosition().y, 2)
     );
-
 
     if (distance <= attackRange) {
         if (attackCooldown.getElapsedTime().asSeconds() > 0.5f) {
@@ -69,7 +68,6 @@ void Monster::draw(sf::RenderWindow &window) const {
         window.draw(sprite);
     }
 }
-
 
 bool Monster::getIsDead() const {
     return isDead;

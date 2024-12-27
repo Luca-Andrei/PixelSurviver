@@ -1,16 +1,27 @@
 #include "Hero.h"
 #include <iostream>
 
-Hero::Hero() = default;
-
-Hero::Hero(const sf::Texture &texture, int health)
-    : health(health) {
-    sprite.setTexture(texture);
-    sprite.setScale(0.05f, 0.05f);
+Hero::Hero() : xp(100) {
+    std::cout << "Hero created with default constructor!" << std::endl;
 }
 
-void Hero::move(float offsetX, float offsetY) {
-    sprite.move(offsetX, offsetY);
+Hero::Hero(const sf::Texture &texture, int health) : health(health), xp(100) {
+    sprite.setTexture(texture);
+    sprite.setScale(0.05f, 0.05f);
+    std::cout << "Hero created with texture and health!" << std::endl;
+}
+
+void Hero::addXP(int amount) {
+    xp.addXP(amount);
+    std::cout << "Hero added " << amount << " XP!" << std::endl;
+    levelUp();
+}
+
+void Hero::levelUp() {
+    if (xp.getXP() >= xp.getMaxXP()) {
+        xp.levelUp();
+        std::cout << "Hero leveled up! Current level: " << xp.getLevel() << std::endl;
+    }
 }
 
 void Hero::takeDamage(int damage) {
@@ -21,32 +32,9 @@ void Hero::takeDamage(int damage) {
     }
 }
 
-void Hero::levelUp() {
-    if (getXP() == getLevel() * 100) {
-        level = getLevel() + 1;
-        xp = 0;
-        std::cout << "Hero level up! Current level is :" << level << std::endl;
-    }
-}
-
-void Hero::addXP(int amount) {
-    xp += amount;
-    std::cout << "Hero gained " << amount << " XP! Total XP: " << xp << std::endl;
-    levelUp();
-}
-
-void Hero::draw(sf::RenderWindow &window) const {
-    window.draw(sprite);
-}
-
 Hero::~Hero() {
-    std::cout << "Hero class is being destroyed!" << std::endl;
-
+    std::cout << "Hero is being destroyed!" << std::endl;
     health = 0;
-    level = 1;
-    xp = 0;
-
-    sprite = sf::Sprite();
-
-    std::cout << "Hero class cleanup complete!" << std::endl;
+    xp.resetXP();
+    std::cout << "Hero cleanup complete!" << std::endl;
 }

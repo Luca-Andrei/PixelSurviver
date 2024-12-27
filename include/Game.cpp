@@ -77,6 +77,11 @@ void Game::run() {
     }
 }
 
+void Game::pause() {
+    isPaused = true;
+    std::cout << "Game is paused. Level-up available!" << std::endl;
+}
+
 void Game::processEvents() {
     sf::Event event{};
     while (window.pollEvent(event)) {
@@ -95,6 +100,9 @@ void Game::processEvents() {
 
 void Game::handleXP() {
     int xpAmount = 10;
+    if (hero.getXP() + xpAmount >= hero.getMaxXP()) {
+        pause();
+    }
     hero.addXP(xpAmount);
 
     float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
@@ -103,6 +111,10 @@ void Game::handleXP() {
 
 void Game::update(float deltaTime) {
     if (gameOver) return;
+
+    if (isPaused) {
+        isPaused = true;
+    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         hero.move(0, -200 * deltaTime);
@@ -316,19 +328,19 @@ Game::~Game() {
     std::cout << "Game class is being destroyed!" << std::endl;
 
     heroTexture = sf::Texture();
-    std::cout << "Hero texture deinitialized." << std::endl;
+    std::cout << "Hero texture dropped." << std::endl;
 
     monsterTexture = sf::Texture();
     monsters.clear();
-    std::cout << "Monster texture deinitialized and monsters cleared." << std::endl;
+    std::cout << "Monster texture dropped and monsters cleared." << std::endl;
 
     restartTexture = sf::Texture();
     restartButton = sf::RectangleShape();
-    std::cout << "Restart button texture deinitialized and reset." << std::endl;
+    std::cout << "Restart button texture dropped and reset." << std::endl;
 
     fireballIconTexture = sf::Texture();
     fireballs.clear();
-    std::cout << "Fireball icon texture deinitialized and fireballs cleared." << std::endl;
+    std::cout << "Fireball icon texture dropped and fireballs cleared." << std::endl;
 
     xpBar = sf::RectangleShape();
     xpFill = sf::RectangleShape();

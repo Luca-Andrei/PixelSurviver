@@ -64,6 +64,8 @@ add_executable(${PROJECT_NAME}
         include/XP.cpp
         include/XP.h
         include/XP.cpp
+        include/Entity.cpp
+        include/Entity.h
 )
 
 include(cmake/CompilerFlags.cmake)

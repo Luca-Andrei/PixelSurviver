@@ -17,13 +17,14 @@ public:
 
     void processEvents();
 
-    void update(float deltaTime);
+    virtual void update(float deltaTime);
 
     void render();
 
     void restartGame();
 
 private:
+    bool isPaused = false;
     sf::Clock gameClock;
     sf::Text timerText;
     sf::RenderWindow window;
@@ -38,12 +39,9 @@ private:
     sf::Texture heroTexture;
     sf::Texture monsterTexture;
     sf::Font font;
-
-
     sf::Texture fireballIconTexture;
     sf::Sprite fireballIconSprite;
     sf::RectangleShape abilityContainer;
-
     sf::RectangleShape xpBar;
     sf::RectangleShape xpFill;
 
@@ -56,5 +54,12 @@ private:
     static std::vector<std::string> loadFireballTextures();
 
     void drawHealthBars();
+
+    void pause();
+
+    bool isGamePaused() const;
+
+    void drawLevelUpFrames();
 };
+
 #endif
