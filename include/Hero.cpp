@@ -21,10 +21,6 @@ void Hero::takeDamage(int damage) {
     }
 }
 
-void Hero::autoAttack() {
-    std::cout << "Hero automatically attacks!" << std::endl;
-}
-
 void Hero::draw(sf::RenderWindow& window) {
     window.draw(sprite);
 }

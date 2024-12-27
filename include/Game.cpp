@@ -5,24 +5,37 @@
 Game::Game()
     : window(sf::VideoMode(800, 600), "PixelSurvivor"),
       gameOver(false) {
-    if (!heroTexture.loadFromFile("../assets/hero_texture.png")) {
+    std::cout << "Game has started!" << std::endl;
+
+    if (!heroTexture.loadFromFile("assets/hero_texture.png")) {
         std::cerr << "Error loading hero texture!" << std::endl;
     }
-
     hero = Hero(heroTexture, 100, 10);
 
-    if (!monsterTexture.loadFromFile("../assets/monster_texture.png")) {
+    if (!monsterTexture.loadFromFile("assets/monster_texture.png")) {
         std::cerr << "Error loading monster texture!" << std::endl;
     }
 
     restartButton.setSize(sf::Vector2f(200, 50));
-    restartButton.setFillColor(sf::Color::White);
+    restartButton.setFillColor(sf::Color::Red);
     restartButton.setPosition(300, 250);
 
-    restartButtonText.setString("Restart");
-    restartButtonText.setCharacterSize(24);
-    restartButtonText.setFillColor(sf::Color::Red);
-    restartButtonText.setPosition(350, 260);
+    if (!restartTexture.loadFromFile("assets/restartbtn.png")) {
+        std::cerr << "Error loading restart texture!" << std::endl;
+    }
+
+    if (!fireballIconTexture.loadFromFile("assets/Fireball/FireballIcon.png")) {
+        std::cerr << "Error loading fireball icon texture!" << std::endl;
+    } else {
+        fireballIconSprite.setTexture(fireballIconTexture);
+    }
+
+    abilityContainer.setSize(sf::Vector2f(10.f, 10.f));
+    abilityContainer.setPosition(sf::Vector2f(10.0f, 10.0f));
+    abilityContainer.setFillColor(sf::Color(0, 0, 0, 150));
+    abilityContainer.setOutlineThickness(2.f);
+    abilityContainer.setOutlineColor(sf::Color::White);
+
 }
 
 void Game::run() {
@@ -55,12 +68,15 @@ void Game::update(float deltaTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         hero.move(0, -200 * deltaTime);
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         hero.move(0, 200 * deltaTime);
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         hero.move(-200 * deltaTime, 0);
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         hero.move(200 * deltaTime, 0);
     }
@@ -72,39 +88,32 @@ void Game::update(float deltaTime) {
 
     attackMonsters();
 
-    for (auto &monster: monsters) {
-        if (monster.getIsDead()) continue; // Skip dead monsters
+    for (auto &fireball : fireballs) {
+        fireball.update();
+        fireball.checkCollisionWithMonsters(monsters);
+    }
+
+    for (auto &monster : monsters) {
+        if (monster.getIsDead()) continue;
         monster.moveTowards(hero.getPosition(), deltaTime);
         if (monster.getBounds().intersects(hero.getBounds())) {
             monster.attack(hero);
         }
     }
 
+    monsters.erase(std::remove_if(monsters.begin(), monsters.end(),
+                                  [](Monster &m) { return m.getIsDead(); }), monsters.end());
+
+    fireballs.erase(std::remove_if(fireballs.begin(), fireballs.end(),
+                                    [](const Ability &fireball) { return !fireball.isActive(); }), fireballs.end());
+
     if (!hero.isAlive() && !gameOver) {
         gameOver = true;
     }
-
-    monsters.erase(std::remove_if(monsters.begin(), monsters.end(),
-                                  [](Monster &m) { return m.getIsDead(); }), monsters.end());
 }
 
 void Game::spawnMonsters() {
-    int numMonsters;
-
-    int elapsedTime = round(spawnClock.getElapsedTime().asSeconds());
-
-    switch (elapsedTime / 30) {
-        case 0:
-            numMonsters = rand() % 2 + 2;
-            break;
-        case 1:
-            numMonsters = rand() % 2 + 6;
-            break;
-        default:
-            numMonsters = rand() % 2 + 6;
-            break;
-    }
-
+    int numMonsters = rand() % 6 + 2;
     for (int i = 0; i < numMonsters; ++i) {
         int x = rand() % window.getSize().x;
         int y = rand() % window.getSize().y;
@@ -114,20 +123,31 @@ void Game::spawnMonsters() {
 }
 
 void Game::attackMonsters() {
-    for (auto &monster: monsters) {
-        if (monster.getBounds().intersects(hero.getBounds())) {
-            monster.takeDamage(5); // Hero attacks the monster
-            std::cout << "Monster took 5 damage!" << std::endl;
-        }
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && fireballCooldown.getElapsedTime().asSeconds() >= 5.f) {
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        fireballs.push_back(Ability(loadFireballTextures(), 0.04f));
+        fireballs.back().trigger(mousePos);
+        fireballCooldown.restart();
     }
 }
 
 void Game::render() {
     window.clear(sf::Color(128, 0, 128));
+
+    window.draw(abilityContainer);
+
     hero.draw(window);
-    for (auto &monster: monsters) {
+
+    for (auto &monster : monsters) {
         monster.draw(window);
     }
+
+    for (auto &fireball : fireballs) {
+        fireball.draw(window);
+    }
+
+    fireballIconSprite.setPosition(abilityContainer.getPosition());
+    window.draw(fireballIconSprite);
 
     if (gameOver) {
         sf::Text gameOverText;
@@ -137,9 +157,7 @@ void Game::render() {
         gameOverText.setFillColor(sf::Color::Red);
         gameOverText.setPosition(250, 150);
         window.draw(gameOverText);
-
         window.draw(restartButton);
-        window.draw(restartButtonText);
     }
 
     window.display();
@@ -148,6 +166,19 @@ void Game::render() {
 void Game::restartGame() {
     hero = Hero(heroTexture, 100, 10);
     monsters.clear();
+    fireballs.clear();
     gameOver = false;
     spawnClock.restart();
+    fireballCooldown.restart();
 }
+
+
+std::vector<std::string> Game::loadFireballTextures() {
+    std::vector<std::string> fireballTextures;
+    for (int i = 1; i <= 12; ++i) {
+        std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) + ".png";
+        fireballTextures.push_back(fileName);
+    }
+    return fireballTextures;
+}
+

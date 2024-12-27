@@ -3,7 +3,7 @@
 #include <cmath>
 
 Monster::Monster(const std::string& textureFile, int health, int power)
-    : health(health), power(power), isDead(false) {
+    : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sf::Texture texture;
     if (!texture.loadFromFile(textureFile)) {
         std::cerr << "Error loading monster texture!" << std::endl;
@@ -12,7 +12,7 @@ Monster::Monster(const std::string& textureFile, int health, int power)
 }
 
 Monster::Monster(const sf::Texture& texture, int health, int power)
-    : health(health), power(power), isDead(false) {
+    : health(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     sprite.setTexture(texture);
     sprite.setScale(0.08f, 0.08f);
 }
@@ -23,16 +23,17 @@ void Monster::moveTowards(const sf::Vector2f& target, float deltaTime) {
     sf::Vector2f direction = target - sprite.getPosition();
     float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-    if (length > 5.0f) {
+    if (length >= 5.0f) {
         direction /= length;
         sprite.move(direction * 100.0f * deltaTime);
+        lastDirection = direction;
     }
 }
 
 void Monster::attack(Hero& hero) {
     if (isDead) return;
 
-    float attackRange = 120.0f;
+    float attackRange = 5.0f;
 
     float distance = std::sqrt(
         std::pow(sprite.getPosition().x - hero.getSprite().getPosition().x, 2) +
@@ -40,8 +41,13 @@ void Monster::attack(Hero& hero) {
     );
 
     if (distance <= attackRange) {
-        hero.takeDamage(power);
-        std::cout << "Monster attacked! Hero HP: " << hero.getSprite().getPosition().y << std::endl;
+        if (attackCooldown.getElapsedTime().asSeconds() > 0.5f) {
+            hero.takeDamage(power);
+            std::cout << "Monster attacked! Hero HP: " << hero.getSprite().getPosition().y << std::endl;
+
+            vibrateAttack();
+            attackCooldown.restart();
+        }
     }
 }
 
@@ -66,3 +72,16 @@ void Monster::draw(sf::RenderWindow& window) {
 bool Monster::getIsDead() const {
     return isDead;
 }
+
+void Monster::vibrateAttack() {
+    if (vibrateCooldown.getElapsedTime().asSeconds() > 0.05f) {
+        sf::Vector2f reverseDirection = -lastDirection;
+
+        float vibrationDistance = 50.0f;
+
+        sprite.move(reverseDirection * vibrationDistance);
+
+        vibrateCooldown.restart();
+    }
+}
+

@@ -1,35 +1,37 @@
-#ifndef GAME_H
-#define GAME_H
-
-#include <SFML/Graphics.hpp>
-#include "Hero.h"
+#include "Ability.h"
 #include "Monster.h"
-
+#include "Hero.h"
+// Game.h
 class Game {
 public:
     Game();
 
     void run();
-
-private:
     void processEvents();
     void update(float deltaTime);
     void render();
     void restartGame();
-    void spawnMonsters();
-    void attackMonsters();
 
+private:
     sf::RenderWindow window;
     Hero hero;
+    std::vector<Monster> monsters;
+    std::vector<Ability> fireballs;
+    sf::Clock spawnClock;
+    sf::Clock fireballCooldown;
+    bool gameOver;
+    sf::RectangleShape restartButton;
+    sf::Texture restartTexture;
     sf::Texture heroTexture;
     sf::Texture monsterTexture;
-    std::vector<Monster> monsters;
-    bool gameOver;
-    sf::Clock spawnClock;
-
     sf::Font font;
-    sf::RectangleShape restartButton;
-    sf::Text restartButtonText;
-};
 
-#endif
+    sf::Texture fireballIconTexture;
+    sf::Sprite fireballIconSprite;
+    sf::RectangleShape abilityContainer;
+
+
+    void spawnMonsters();
+    void attackMonsters();
+    std::vector<std::string> loadFireballTextures();
+};

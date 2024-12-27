@@ -13,6 +13,7 @@ public:
     void takeDamage(int damage);
     void autoAttack();
     bool isAlive() const { return health > 0; }
+    bool isMoving();
 
     sf::Sprite& getSprite() { return sprite; }
     sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
@@ -23,6 +24,7 @@ public:
 private:
     int health;
     int power;
+    int attackSpeed;
     sf::Sprite sprite;
 };
 

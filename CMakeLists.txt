@@ -59,6 +59,8 @@ add_executable(${PROJECT_NAME}
         include/Game.h
         include/Game.cpp
         include/Hero.h
+        include/Ability.cpp
+        include/Ability.h
 )
 
 include(cmake/CompilerFlags.cmake)
@@ -99,3 +101,4 @@ endif()
 
 
 include(cmake/CopyHelper.cmake)
+copy_files(DIRECTORY assets)

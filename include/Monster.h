@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "Hero.h"  // Assuming Hero is another class you've defined
+#include "Hero.h"
 
 class Monster {
 public:
@@ -17,11 +17,18 @@ public:
     int getHealth() const { return health; }
     bool getIsDead() const;
     sf::Sprite& getSprite() { return sprite; }
+
 private:
     sf::Sprite sprite;
     int health;
     int power;
     bool isDead;
+
+    sf::Vector2f lastDirection;
+
+    sf::Clock attackCooldown;
+    sf::Clock vibrateCooldown;
+    void vibrateAttack();
 };
 
 #endif
