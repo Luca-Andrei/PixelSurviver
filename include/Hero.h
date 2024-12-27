@@ -29,6 +29,8 @@ public:
     int getXP() const { return xp.getXP(); }
     int getMaxXP() const { return xp.getMaxXP(); }
 
+    void reset();
+
     sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
 
 protected:

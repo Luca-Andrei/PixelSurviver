@@ -15,6 +15,8 @@ public:
     int getMaxXP() const { return maxXP; }
     int getLevel() const { return level; }
 
+    void resetLevel();
+
     void levelUp();
 
 private:

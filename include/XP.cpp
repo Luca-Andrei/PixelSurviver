@@ -36,6 +36,10 @@ void XP::resetXP() {
     xp = 0;
 }
 
+void XP::resetLevel() {
+    level = 1;
+}
+
 void XP::levelUp() {
     try {
         if (xp >= maxXP) {

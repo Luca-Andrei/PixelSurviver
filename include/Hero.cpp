@@ -77,6 +77,12 @@ void Hero::setPosition(float x, float y) {
     sprite.setPosition(x, y);
 }
 
+void Hero::reset() {
+    health = 100;
+    xp.resetXP();
+    std::cout << "Hero died, everything reset to level 1!" << std::endl;
+}
+
 Hero::~Hero() {
     try {
         std::cout << "Hero is being destroyed!" << std::endl;

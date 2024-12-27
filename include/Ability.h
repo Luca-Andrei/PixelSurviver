@@ -17,7 +17,7 @@ public:
 
     [[nodiscard]] bool isActive() const;
 
-    void checkCollisionWithMonsters(std::vector<Monster> &monsters) const;
+    void checkCollisionWithMonsters(std::vector<Monster> &monsters);
 
     void draw(sf::RenderWindow &window) const;
 
@@ -29,6 +29,7 @@ private:
     float animationSpeed;
     float currentFrame;
     bool active;
+    bool hasDealtDamage;
     sf::Vector2f position;
     sf::Clock animationClock;
 };

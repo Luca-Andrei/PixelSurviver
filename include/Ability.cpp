@@ -3,7 +3,7 @@
 #include "Error.h"
 
 Ability::Ability(const std::vector<std::string> &textureFiles, float animationSpeed)
-    : animationSpeed(animationSpeed), currentFrame(0), active(false) {
+    : animationSpeed(animationSpeed), currentFrame(0), active(false), hasDealtDamage(false) {
     try {
         if (textureFiles.empty()) {
             throw GameError("Texture files list is empty.");
@@ -38,6 +38,7 @@ void Ability::trigger(const sf::Vector2f &newPosition) {
         position = newPosition;
         currentFrame = 0;
         active = true;
+        hasDealtDamage = false;
 
         for (auto &sprite: sprites) {
             sf::FloatRect bounds = sprite.getGlobalBounds();
@@ -68,14 +69,19 @@ bool Ability::isActive() const {
     return active;
 }
 
-void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) const {
+void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
     try {
-        if (!active || currentFrame != static_cast<float>(sprites.size()) / 2) return;
+        if (!active || hasDealtDamage) return;
 
-        for (auto &monster: monsters) {
-            if (monster.getBounds().intersects(sprites[static_cast<std::size_t>(currentFrame)].getGlobalBounds())) {
-                dealDamage(monster);
+        // Apply damage only on the 6th frame (frame index 5)
+        if (currentFrame == 5) {
+            for (auto &monster: monsters) {
+                if (monster.getBounds().intersects(sprites[static_cast<std::size_t>(currentFrame)].getGlobalBounds())) {
+                    dealDamage(monster);
+                }
             }
+
+            hasDealtDamage = true;
         }
     } catch (const std::exception &e) {
         std::cerr << "Error checking collision with monsters: " << e.what() << std::endl;
@@ -87,8 +93,7 @@ void Ability::dealDamage(Monster &monster) {
         if (monster.getIsDead()) {
             throw GameError("Cannot deal damage to a dead monster.");
         }
-
-        monster.takeDamage(50);
+        monster.takeDamage(10); // Deal damage to the monster
     } catch (const std::exception &e) {
         std::cerr << "Error dealing damage to monster: " << e.what() << std::endl;
     }

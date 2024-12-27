@@ -46,10 +46,6 @@ Game::Game()
         restartButton.setFillColor(sf::Color::Red);
         restartButton.setPosition(300, 250);
 
-        if (!restartTexture.loadFromFile("assets/restartbtn.png")) {
-            throw TextureLoadError("Error loading restart button texture!");
-        }
-        std::cout << "Restart button texture loaded successfully!" << std::endl;
 
         if (!fireballIconTexture.loadFromFile("assets/Fireball/FireballIcon.png")) {
             throw TextureLoadError("Error loading fireball icon texture!");
@@ -90,7 +86,6 @@ Game::Game()
         cameraView.setCenter(hero.getPosition().x + hero.getSprite().getGlobalBounds().width / 2,
                              hero.getPosition().y + hero.getSprite().getGlobalBounds().height / 2);
         window.setView(cameraView);
-
     } catch (const TextureLoadError &e) {
         std::cerr << e.what() << std::endl;
         exit(1);
@@ -231,7 +226,8 @@ void Game::spawnMonsters() {
         for (int i = 0; i < numMonsters; ++i) {
             std::uniform_real_distribution<float> disX(hero.getPosition().x - spawnRadius,
                                                        hero.getPosition().x + spawnRadius);
-            std::uniform_real_distribution<float> disY(hero.getPosition().y - spawnRadius, hero.getPosition().y + spawnRadius);
+            std::uniform_real_distribution<float> disY(hero.getPosition().y - spawnRadius,
+                                                       hero.getPosition().y + spawnRadius);
 
             float x = disX(gen);
             float y = disY(gen);
@@ -263,7 +259,6 @@ void Game::render() {
     try {
         sf::Vector2u windowSize = window.getSize();
 
-        // Draw the world tiles
         int tileWidth = static_cast<int>(grassTexture.getSize().x) / 10;
         int tileHeight = static_cast<int>(grassTexture.getSize().y) / 10;
 
@@ -288,11 +283,11 @@ void Game::render() {
 
         drawHealthBars();
 
-        for (const auto &monster : monsters) {
+        for (const auto &monster: monsters) {
             monster.draw(window);
         }
 
-        for (const auto &fireball : fireballs) {
+        for (const auto &fireball: fireballs) {
             fireball.draw(window);
         }
 
@@ -309,7 +304,7 @@ void Game::render() {
 
             sf::RectangleShape cooldownProgress(sf::Vector2f(abilityContainer.getSize().x,
                                                              abilityContainer.getSize().y * progress));
-            cooldownProgress.setFillColor(sf::Color(255, 0, 0, 200));
+            cooldownProgress.setFillColor(sf::Color(255, 0, 0, 130));
 
             cooldownProgress.setPosition(abilityContainer.getPosition().x,
                                          abilityContainer.getPosition().y +
@@ -324,12 +319,17 @@ void Game::render() {
         window.draw(xpFill);
 
         if (gameOver) {
+            sf::RectangleShape blackBackground(sf::Vector2f(static_cast<float>(window.getSize().x),
+                                                            static_cast<float>(window.getSize().y)));
+            blackBackground.setFillColor(sf::Color(0, 0, 0, 200));
+            window.draw(blackBackground);
             sf::Text gameOverText;
             gameOverText.setFont(font);
             gameOverText.setString("You Are Dead!");
             gameOverText.setCharacterSize(50);
             gameOverText.setFillColor(sf::Color::Red);
-            gameOverText.setPosition(250, 150);
+            float gameOverWidth = gameOverText.getLocalBounds().width;
+            gameOverText.setPosition((static_cast<float>(window.getSize().x) - gameOverWidth) / 2.f, 150.f);
             window.draw(gameOverText);
             window.draw(restartButton);
         }
@@ -339,12 +339,6 @@ void Game::render() {
         std::cerr << "Error during render: " << e.what() << std::endl;
     }
 }
-
-
-
-
-
-
 
 void Game::restartGame() {
     try {
@@ -356,6 +350,9 @@ void Game::restartGame() {
         gameOver = false;
         spawnClock.restart();
         fireballCooldown.restart();
+        gameClock.restart();
+        hero.reset();
+        xpFill.setSize(sf::Vector2f(0.f, 20.f));
     } catch (const std::exception &e) {
         std::cerr << "Error restarting game: " << e.what() << std::endl;
     }
@@ -384,14 +381,15 @@ void Game::drawHealthBars() {
         for (auto &monster: monsters) {
             if (monster.getIsDead()) continue;
 
-            float monsterHealthPercentage = static_cast<float>(monster.getHealth()) / static_cast<float>(monster.getMaxHealth());
+            float monsterHealthPercentage = static_cast<float>(monster.getHealth()) / static_cast<float>(monster.
+                                                getMaxHealth());
             float monsterLostHealthPercentage = 1.0f - monsterHealthPercentage;
 
             sf::RectangleShape monsterGreenHealthBar(sf::Vector2f(50.f * monsterHealthPercentage, 5.f));
-            monsterGreenHealthBar.setFillColor(sf::Color(0, 255, 0));
+            monsterGreenHealthBar.setFillColor(sf::Color(255, 0, 0));
 
             sf::RectangleShape monsterRedHealthBar(sf::Vector2f(50.f * monsterLostHealthPercentage, 5.f));
-            monsterRedHealthBar.setFillColor(sf::Color(255, 0, 0));
+            monsterRedHealthBar.setFillColor(sf::Color(255, 0, 0, 150));
 
             float monsterXPos = monster.getPosition().x + monster.getSprite().getGlobalBounds().width / 2 - 25.f;
             float monsterYPos = monster.getPosition().y - 10.f;
@@ -411,7 +409,8 @@ std::vector<std::string> Game::loadFireballTextures() {
     try {
         std::vector<std::string> fireballTextures;
         for (int i = 1; i <= 12; ++i) {
-            std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) + ".png";
+            std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) +
+                                   ".png";
             fireballTextures.push_back(fileName);
         }
         return fireballTextures;
