@@ -22,6 +22,21 @@ Game::Game()
 
         std::cout << "Hero texture loaded successfully!" << std::endl;
 
+        if (!grassTexture.loadFromFile("assets/grass_1.png")) {
+            throw TextureLoadError("Error loading grass texture!");
+        }
+        grassTexture.setRepeated(true);
+
+        grassBackground.setSize(sf::Vector2f(static_cast<float>(window.getSize().x),
+                                             static_cast<float>(window.getSize().y)));
+        grassBackground.setTexture(&grassTexture);
+        grassBackground.setTextureRect(sf::IntRect(0, 0, static_cast<int>(window.getSize().x),
+                                                   static_cast<int>(window.getSize().y)));
+
+
+        std::cout << "Grass textures loaded successfully!" << std::endl;
+
+
         if (!monsterTexture.loadFromFile("assets/monster_texture.png")) {
             throw TextureLoadError("Error loading monster texture!");
         }
@@ -60,9 +75,15 @@ Game::Game()
         xpFill.setFillColor(sf::Color(0, 255, 0));
         std::cout << "XP fill texture created successfully!" << std::endl;
 
-        timerText.setCharacterSize(24);
+        if (!font.loadFromFile("assets/timerfont.ttf")) {
+            throw TextureLoadError("Error loading font!");
+        }
+
+        timerText.setFont(font);
+        timerText.setCharacterSize(36);
         timerText.setFillColor(sf::Color::White);
-        timerText.setPosition(static_cast<float>(window.getSize().x) - 10.f, static_cast<float>(window.getSize().y));
+        float textWidth = timerText.getLocalBounds().width;
+        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) / 2.f, 5.f);
         std::cout << "Timer started successfully!" << std::endl;
 
         cameraView.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
@@ -157,8 +178,12 @@ void Game::update(float deltaTime) {
         int seconds = static_cast<int>(elapsed.asSeconds()) % 60;
 
         std::stringstream timeStream;
-        timeStream << "Time: " << minutes << ":" << (seconds < 10 ? "0" : "") << seconds;
+        timeStream << (minutes < 10 ? "0" : "") << minutes << ":" << (seconds < 10 ? "0" : "") << seconds;
         timerText.setString(timeStream.str());
+
+
+        float textWidth = timerText.getLocalBounds().width;
+        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) / 2.f, 5.f);
 
         for (auto &fireball: fireballs) {
             fireball.update();
@@ -201,12 +226,16 @@ void Game::spawnMonsters() {
 
         std::cout << "A pack of " << numMonsters << " monsters has just spawned!" << std::endl;
 
+        spawnRadius = 300.f;
+
         for (int i = 0; i < numMonsters; ++i) {
-            std::uniform_real_distribution<float> disX(0.0f, static_cast<float>(window.getSize().x - 1));
-            std::uniform_real_distribution<float> disY(0.0f, static_cast<float>(window.getSize().y - 1));
+            std::uniform_real_distribution<float> disX(hero.getPosition().x - spawnRadius,
+                                                       hero.getPosition().x + spawnRadius);
+            std::uniform_real_distribution<float> disY(hero.getPosition().y - spawnRadius, hero.getPosition().y + spawnRadius);
 
             float x = disX(gen);
             float y = disY(gen);
+
             monsters.emplace_back(monsterTexture, 50, 5);
             monsters.back().getSprite().setPosition(x, y);
         }
@@ -214,6 +243,7 @@ void Game::spawnMonsters() {
         std::cerr << "Error spawning monsters: " << e.what() << std::endl;
     }
 }
+
 
 void Game::attackMonsters() {
     try {
@@ -231,17 +261,38 @@ void Game::attackMonsters() {
 
 void Game::render() {
     try {
-        window.clear(sf::Color(128, 0, 128));
+        sf::Vector2u windowSize = window.getSize();
 
-        window.setView(cameraView);
+        // Draw the world tiles
+        int tileWidth = static_cast<int>(grassTexture.getSize().x) / 10;
+        int tileHeight = static_cast<int>(grassTexture.getSize().y) / 10;
+
+        int numTilesX = static_cast<int>(std::ceil(static_cast<int>(windowSize.x) / tileWidth) + 1);
+        int numTilesY = static_cast<int>(std::ceil(static_cast<int>(windowSize.y) / tileHeight) + 1);
+
+        int offsetX = static_cast<int>(cameraView.getCenter().x) - static_cast<int>(windowSize.x) / 2;
+        int offsetY = static_cast<int>(cameraView.getCenter().y) - static_cast<int>(windowSize.y) / 2;
+
+        for (int i = 0; i < numTilesX; ++i) {
+            for (int j = 0; j < numTilesY; ++j) {
+                sf::Sprite grassSprite(grassTexture);
+                grassSprite.setScale(.1f, .1f);
+                int posX = (i * tileWidth) + offsetX;
+                int posY = (j * tileHeight) + offsetY;
+
+                grassSprite.setPosition(static_cast<float>(posX), static_cast<float>(posY));
+
+                window.draw(grassSprite);
+            }
+        }
 
         drawHealthBars();
 
-        for (const auto &monster: monsters) {
+        for (const auto &monster : monsters) {
             monster.draw(window);
         }
 
-        for (const auto &fireball: fireballs) {
+        for (const auto &fireball : fireballs) {
             fireball.draw(window);
         }
 
@@ -288,6 +339,11 @@ void Game::render() {
         std::cerr << "Error during render: " << e.what() << std::endl;
     }
 }
+
+
+
+
+
 
 
 void Game::restartGame() {

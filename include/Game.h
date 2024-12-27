@@ -44,6 +44,9 @@ private:
     sf::RectangleShape abilityContainer;
     sf::RectangleShape xpBar;
     sf::RectangleShape xpFill;
+    sf::Texture grassTexture;
+    sf::RectangleShape grassBackground;
+    float spawnRadius{};
 
     void handleXP();
 
