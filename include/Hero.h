@@ -8,6 +8,7 @@
 class Hero : public Entity {
 public:
     Hero();
+
     Hero(const sf::Texture &texture, int health);
 
     ~Hero() override;

@@ -9,17 +9,22 @@
 class Monster : public Entity {
 public:
     Monster(const std::string &textureFile, int health, int power);
+
     Monster(const sf::Texture &texture, int health, int power);
 
     ~Monster() override;
 
     void moveTowards(const sf::Vector2f &target, float deltaTime);
+
     void attack(Hero &hero);
+
     void takeDamage(int damage);
 
     void draw(sf::RenderWindow &window) const override;
 
     bool getIsDead() const;
+
+    void checkIfDead() const;
 
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }

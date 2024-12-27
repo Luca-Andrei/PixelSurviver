@@ -11,7 +11,7 @@ class Game {
 public:
     Game();
 
-    ~Game();
+    virtual ~Game();
 
     void run();
 
@@ -53,10 +53,6 @@ private:
     static std::vector<std::string> loadFireballTextures();
 
     void drawHealthBars();
-
-    bool isGamePaused() const;
-
-    void drawLevelUpFrames();
 };
 
 #endif
