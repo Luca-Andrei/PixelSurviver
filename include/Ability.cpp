@@ -21,14 +21,14 @@ Ability::Ability(const std::vector<std::string> &textureFiles, float animationSp
     }
 }
 
-void Ability::trigger(const sf::Vector2f &position) {
-    this->position = position;
+void Ability::trigger(const sf::Vector2f &newPosition) {
+    position = newPosition;
     currentFrame = 0;
     active = true;
 
     for (auto &sprite: sprites) {
         sf::FloatRect bounds = sprite.getGlobalBounds();
-        sprite.setPosition(position.x - bounds.width / 2, position.y - bounds.height / 2);
+        sprite.setPosition(newPosition.x - bounds.width / 2, newPosition.y - bounds.height / 2);
     }
 }
 
