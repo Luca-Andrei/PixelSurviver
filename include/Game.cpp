@@ -77,11 +77,6 @@ void Game::run() {
     }
 }
 
-void Game::pause() {
-    isPaused = true;
-    std::cout << "Game is paused. Level-up available!" << std::endl;
-}
-
 void Game::processEvents() {
     sf::Event event{};
     while (window.pollEvent(event)) {
@@ -100,9 +95,7 @@ void Game::processEvents() {
 
 void Game::handleXP() {
     int xpAmount = 10;
-    if (hero.getXP() + xpAmount >= hero.getMaxXP()) {
-        pause();
-    }
+
     hero.addXP(xpAmount);
 
     float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
@@ -112,9 +105,6 @@ void Game::handleXP() {
 void Game::update(float deltaTime) {
     if (gameOver) return;
 
-    if (isPaused) {
-        isPaused = true;
-    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         hero.move(0, -200 * deltaTime);

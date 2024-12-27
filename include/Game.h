@@ -24,7 +24,6 @@ public:
     void restartGame();
 
 private:
-    bool isPaused = false;
     sf::Clock gameClock;
     sf::Text timerText;
     sf::RenderWindow window;
@@ -54,8 +53,6 @@ private:
     static std::vector<std::string> loadFireballTextures();
 
     void drawHealthBars();
-
-    void pause();
 
     bool isGamePaused() const;
 

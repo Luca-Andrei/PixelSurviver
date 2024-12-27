@@ -6,11 +6,15 @@
 class XP : public Entity {
 public:
     explicit XP(int maxXP = 100);
+
     void addXP(int amount);
+
     void resetXP();
-    int getXP() const {return xp;}
-    int getMaxXP() const {return maxXP;}
-    int getLevel() const {return level;}
+
+    int getXP() const { return xp; }
+    int getMaxXP() const { return maxXP; }
+    int getLevel() const { return level; }
+
     void levelUp();
 
 private:
