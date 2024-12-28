@@ -81,4 +81,6 @@ endif()
 
 
 include(cmake/CopyHelper.cmake)
+
 copy_files(DIRECTORY assets)
+configure_file(${CMAKE_SOURCE_DIR}/tastatura.txt ${CMAKE_BINARY_DIR}/tastatura.txt COPYONLY)

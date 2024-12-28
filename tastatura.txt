@@ -1,2 +1,21 @@
-5
-11 22 33 44 55
+name:Anguish damage:50 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Atrophy damage:20 cooldown:2s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Blood Pact damage:10 cooldown:1s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Branding Fire damage:30 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Change Of Heart damage:40 cooldown:7s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Divine Protection damage:0 cooldown:10s invincibility:Y invincibility_duration:3s power:0 life_steal:0
+name:Earth Spike damage:100 cooldown:10s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Fireball damage:50 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Flamin' damage:100 cooldown:10s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Frostbite damage:20 cooldown:3s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Galvanize damage:50 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Hellfire damage:200 cooldown:15s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Ice Spire damage:40 cooldown:4s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Lightning Rod damage:50 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Plagued damage:120 cooldown:6s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Plasma Storm damage:100 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Soul Siphon damage:0 cooldown:20s invincibility:N invincibility_duration:0s power:power+power*0.5 life_steal:0
+name:Tanglevine damage:20 cooldown:3s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Tidal Wave damage:50 cooldown:5s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Toxicity damage:5 cooldown:10s invincibility:N invincibility_duration:0s power:0 life_steal:0
+name:Vampirism damage:20 cooldown:20s invincibility:N invincibility_duration:0s power:0 life_steal:0.5

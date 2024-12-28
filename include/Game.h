@@ -63,6 +63,22 @@ private:
     static std::vector<std::string> loadAbilityTextures(const std::string &directory, int numTextures);
 
     void drawHealthBars();
+
+    void loadAbilitiesFromFile(const std::string& filePath);
+
+    struct AbilityData {
+        int damage;
+        float cooldown;
+        bool invincibility;
+        float invincibilityDuration;
+        float power;
+        float life_steal;
+
+        explicit AbilityData(int dmg = 0, float cd = 0.0f, bool inv = false, float invDuration = 0.0f, float pow = 0.0f, float ls=0.0f)
+            : damage(dmg), cooldown(cd), invincibility(inv), invincibilityDuration(invDuration), power(pow), life_steal(ls) {}
+    };
+
+    std::map<std::string, AbilityData> abilities;
 };
 
 #endif

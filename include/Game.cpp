@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <fstream>
 #include "Error.h"
 
 Game::Game()
@@ -54,6 +55,8 @@ Game::Game()
         }
         std::cout << "Fireball texture loaded successfully!" << std::endl;
 
+        loadAbilitiesFromFile("tastatura.txt");
+
         abilityContainer.setSize(sf::Vector2f(fireballIconSprite.getTexture()->getSize()));
         abilityContainer.setPosition(sf::Vector2f(10.0f, 10.0f));
         abilityContainer.setFillColor(sf::Color(0, 0, 0, 80));
@@ -103,6 +106,39 @@ void Game::run() {
     } catch (const std::exception &e) {
         std::cerr << "An error occurred during the game loop: " << e.what() << std::endl;
     }
+}
+
+void Game::loadAbilitiesFromFile(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cerr << "Error opening abilities file." << std::endl;
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string name, temp;
+        int damage;
+        float cooldown, invincibilityDuration, power,life_steal;
+        char invincibilityChar;
+
+        if (!(iss >> temp >> name)) continue;
+
+        iss >> temp >> damage;
+        iss >> temp >> cooldown;
+        iss >> temp >> invincibilityChar;
+        iss >> temp >> invincibilityDuration;
+        iss >> temp >> power;
+        iss >> temp >> life_steal;
+
+        bool invincibility = (invincibilityChar == 'Y');
+
+        abilities[name] = AbilityData(damage, cooldown, invincibility, invincibilityDuration, power, life_steal);
+    }
+
+    file.close();
+    std::cout << "Abilities loaded from file!" << std::endl;
 }
 
 void Game::pauseGame() {
