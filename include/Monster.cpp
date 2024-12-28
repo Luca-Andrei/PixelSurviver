@@ -113,10 +113,6 @@ void Monster::draw(sf::RenderWindow &window) const {
     }
 }
 
-bool Monster::getIsDead() const {
-    return isDead;
-}
-
 void Monster::vibrateAttack() {
     try {
         if (vibrateCooldown.getElapsedTime().asSeconds() > 0.05f) {

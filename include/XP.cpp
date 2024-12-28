@@ -41,13 +41,8 @@ void XP::resetLevel() {
 }
 
 void XP::levelUp() {
-    try {
         if (xp >= maxXP) {
             level++;
             xp = 0;
-            std::cout << "XP Level Up! New level: " << level << std::endl;
         }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during leveling up: " << e.what() << std::endl;
-    }
 }

@@ -19,6 +19,8 @@ public:
 
     void levelUp();
 
+    void levelUpAbilities();
+
 private:
     int xp;
     int maxXP;

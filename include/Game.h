@@ -23,6 +23,14 @@ public:
 
     void restartGame();
 
+    void pauseGame();
+
+    bool checkPause() const { return isPaused; }
+
+    void showAbilitySelection();
+
+    void unpauseGame();
+
 private:
     sf::View cameraView;
     sf::Clock gameClock;
@@ -57,6 +65,9 @@ private:
     static std::vector<std::string> loadFireballTextures();
 
     void drawHealthBars();
+
+    bool isPaused;
+
 };
 
 #endif

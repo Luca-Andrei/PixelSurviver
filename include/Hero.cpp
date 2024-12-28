@@ -50,6 +50,8 @@ void Hero::levelUp() {
         if (xp.getXP() >= xp.getMaxXP()) {
             xp.levelUp();
             std::cout << "Hero leveled up! Current level: " << xp.getLevel() << std::endl;
+            //game.pause();
+            std::cout << "Choose your next ability!" << std::endl;
         }
     } catch (const std::exception &e) {
         std::cerr << "Error during level up: " << e.what() << std::endl;

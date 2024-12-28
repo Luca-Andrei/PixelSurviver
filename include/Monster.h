@@ -22,14 +22,14 @@ public:
 
     void draw(sf::RenderWindow &window) const override;
 
-    bool getIsDead() const;
-
     void checkIfDead() const;
 
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
 
     sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
+
+    bool getIsDead() const {return isDead;}
 
 private:
     int health;

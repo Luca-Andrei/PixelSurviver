@@ -73,7 +73,6 @@ void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
     try {
         if (!active || hasDealtDamage) return;
 
-        // Apply damage only on the 6th frame (frame index 5)
         if (currentFrame == 5) {
             for (auto &monster: monsters) {
                 if (monster.getBounds().intersects(sprites[static_cast<std::size_t>(currentFrame)].getGlobalBounds())) {
@@ -93,7 +92,7 @@ void Ability::dealDamage(Monster &monster) {
         if (monster.getIsDead()) {
             throw GameError("Cannot deal damage to a dead monster.");
         }
-        monster.takeDamage(10); // Deal damage to the monster
+        monster.takeDamage(50);
     } catch (const std::exception &e) {
         std::cerr << "Error dealing damage to monster: " << e.what() << std::endl;
     }

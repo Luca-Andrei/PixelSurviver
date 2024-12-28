@@ -7,7 +7,7 @@
 
 Game::Game()
     : window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
-      gameOver(false) {
+      gameOver(false), isPaused(false) {
     try {
         std::cout << "Game has started!" << std::endl;
 
@@ -22,7 +22,7 @@ Game::Game()
 
         std::cout << "Hero texture loaded successfully!" << std::endl;
 
-        if (!grassTexture.loadFromFile("assets/grass_1.png")) {
+        if (!grassTexture.loadFromFile("assets/grass.png")) {
             throw TextureLoadError("Error loading grass texture!");
         }
         grassTexture.setRepeated(true);
@@ -105,6 +105,59 @@ void Game::run() {
     }
 }
 
+void Game::pauseGame() {
+    std::cout << "Game has been paused!" << std::endl;
+    isPaused = true;
+}
+
+void Game::unpauseGame() {
+    std::cout << "Game has been unpaused!" << std::endl;
+    isPaused = false;
+}
+
+void Game::showAbilitySelection() {
+    try {
+        float windowWidth = static_cast<float>(window.getSize().x);
+        float windowHeight = static_cast<float>(window.getSize().y);
+
+        float rectHeight = windowHeight / 2.f; // Height for each rectangle
+        float totalHorizontalSpacing = windowWidth / 6.f; // Total space for the three rectangles and spacing
+        float rectWidth = (windowWidth - 2 * totalHorizontalSpacing) / 3.f - totalHorizontalSpacing / 3.f;
+        // Width for each rectangle
+        float spacing = totalHorizontalSpacing / 3.f; // Spacing between the rectangles
+
+        sf::RectangleShape abilityOption1(sf::Vector2f(rectWidth, rectHeight));
+        sf::RectangleShape abilityOption2(sf::Vector2f(rectWidth, rectHeight));
+        sf::RectangleShape abilityOption3(sf::Vector2f(rectWidth, rectHeight));
+
+        abilityOption2.setPosition((windowWidth - rectWidth) / 2.f, (windowHeight - rectHeight) / 2.f);
+
+        abilityOption1.setPosition(abilityOption2.getPosition().x - rectWidth - spacing,
+                                   (windowHeight - rectHeight) / 2.f);
+        abilityOption3.setPosition(abilityOption2.getPosition().x + rectWidth + spacing,
+                                   (windowHeight - rectHeight) / 2.f);
+
+        abilityOption1.setOutlineThickness(2.f);
+        abilityOption2.setOutlineThickness(2.f);
+        abilityOption3.setOutlineThickness(2.f);
+
+        abilityOption1.setOutlineColor(sf::Color::White);
+        abilityOption2.setOutlineColor(sf::Color::White);
+        abilityOption3.setOutlineColor(sf::Color::White);
+
+        abilityOption1.setFillColor(sf::Color::Transparent);
+        abilityOption2.setFillColor(sf::Color::Transparent);
+        abilityOption3.setFillColor(sf::Color::Transparent);
+
+        window.draw(abilityOption1);
+        window.draw(abilityOption2);
+        window.draw(abilityOption3);
+    } catch (const std::exception &e) {
+        std::cerr << "Error creating ability selection rectangles: " << e.what() << std::endl;
+    }
+}
+
+
 void Game::processEvents() {
     try {
         sf::Event event{};
@@ -128,6 +181,9 @@ void Game::processEvents() {
 void Game::handleXP() {
     try {
         int xpAmount = 10;
+        if (hero.getXP()+xpAmount>=hero.getMaxXP()) {
+            pauseGame();
+        }
         hero.addXP(xpAmount);
 
         float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
@@ -139,7 +195,7 @@ void Game::handleXP() {
 
 void Game::update(float deltaTime) {
     try {
-        if (gameOver) return;
+        if (gameOver || isPaused) return;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             hero.move(0, -200 * deltaTime);
@@ -206,6 +262,7 @@ void Game::update(float deltaTime) {
         if (!hero.isAlive()) {
             gameOver = true;
         }
+
     } catch (const std::exception &e) {
         std::cerr << "Error during game update: " << e.what() << std::endl;
     }
@@ -268,6 +325,7 @@ void Game::render() {
         int offsetX = static_cast<int>(cameraView.getCenter().x) - static_cast<int>(windowSize.x) / 2;
         int offsetY = static_cast<int>(cameraView.getCenter().y) - static_cast<int>(windowSize.y) / 2;
 
+        window.setView(cameraView);
         for (int i = 0; i < numTilesX; ++i) {
             for (int j = 0; j < numTilesY; ++j) {
                 sf::Sprite grassSprite(grassTexture);
@@ -334,11 +392,33 @@ void Game::render() {
             window.draw(restartButton);
         }
 
+        if (isPaused) {
+            sf::RectangleShape blackBackground(sf::Vector2f(static_cast<float>(window.getSize().x),
+                                                            static_cast<float>(window.getSize().y)));
+            blackBackground.setFillColor(sf::Color(0, 0, 0, 200));
+            window.draw(blackBackground);
+
+            sf::Text pauseText;
+            pauseText.setFont(font);
+            pauseText.setString("Choose your ability!");
+            pauseText.setCharacterSize(50);
+            pauseText.setFillColor(sf::Color::Yellow);
+            float pauseTextWidth = pauseText.getLocalBounds().width;
+            pauseText.setPosition((static_cast<float>(window.getSize().x) - pauseTextWidth) / 2.f, 20.f);
+            showAbilitySelection();
+            window.draw(pauseText);
+            window.display();
+            return;
+        }
+
+        window.setView(cameraView);
+
         window.display();
     } catch (const std::exception &e) {
         std::cerr << "Error during render: " << e.what() << std::endl;
     }
 }
+
 
 void Game::restartGame() {
     try {
