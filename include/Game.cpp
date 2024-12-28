@@ -47,15 +47,8 @@ Game::Game()
         restartButton.setFillColor(sf::Color::Red);
         restartButton.setPosition(300, 250);
 
-
-        if (!fireballIconTexture.loadFromFile("assets/Fireball/FireballIcon.png")) {
-            throw TextureLoadError("Error loading fireball icon texture!");
-        } else {
-            fireballIconSprite.setTexture(fireballIconTexture);
-        }
-        std::cout << "Fireball texture loaded successfully!" << std::endl;
-
-        loadAbilitiesFromFile("tastatura.txt");
+        fireballIconTexture = loadAbilityIcons("Fireball");
+        fireballIconSprite.setTexture(fireballIconTexture);
 
         abilityContainer.setSize(sf::Vector2f(fireballIconSprite.getTexture()->getSize()));
         abilityContainer.setPosition(sf::Vector2f(10.0f, 10.0f));
@@ -82,7 +75,9 @@ Game::Game()
         timerText.setCharacterSize(36);
         timerText.setFillColor(sf::Color::White);
         float textWidth = timerText.getLocalBounds().width;
-        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) / 2.f, 5.f);
+        float textHeight = timerText.getLocalBounds().height;
+        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) - 5.f,
+                              static_cast<float>(window.getSize().y) - textHeight - 20.f);
         std::cout << "Timer started successfully!" << std::endl;
 
         cameraView.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
@@ -106,39 +101,6 @@ void Game::run() {
     } catch (const std::exception &e) {
         std::cerr << "An error occurred during the game loop: " << e.what() << std::endl;
     }
-}
-
-void Game::loadAbilitiesFromFile(const std::string& filePath) {
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        std::cerr << "Error opening abilities file." << std::endl;
-        return;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        std::istringstream iss(line);
-        std::string name, temp;
-        int damage;
-        float cooldown, invincibilityDuration, power,life_steal;
-        char invincibilityChar;
-
-        if (!(iss >> temp >> name)) continue;
-
-        iss >> temp >> damage;
-        iss >> temp >> cooldown;
-        iss >> temp >> invincibilityChar;
-        iss >> temp >> invincibilityDuration;
-        iss >> temp >> power;
-        iss >> temp >> life_steal;
-
-        bool invincibility = (invincibilityChar == 'Y');
-
-        abilities[name] = AbilityData(damage, cooldown, invincibility, invincibilityDuration, power, life_steal);
-    }
-
-    file.close();
-    std::cout << "Abilities loaded from file!" << std::endl;
 }
 
 void Game::pauseGame() {
@@ -216,7 +178,7 @@ void Game::processEvents() {
 void Game::handleXP() {
     try {
         int xpAmount = 10;
-        if (hero.getXP()+xpAmount>=hero.getMaxXP()) {
+        if (hero.getXP() + xpAmount >= hero.getMaxXP()) {
             pauseGame();
             //Ability check
             if (abilityCK) unpauseGame();
@@ -271,7 +233,9 @@ void Game::update(float deltaTime) {
 
 
         float textWidth = timerText.getLocalBounds().width;
-        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) / 2.f, 5.f);
+        float textHeight = timerText.getLocalBounds().height;
+        timerText.setPosition((static_cast<float>(window.getSize().x) - textWidth) - 5.f,
+                              static_cast<float>(window.getSize().y) - textHeight - 20.f);
 
         for (auto &fireball: fireballs) {
             fireball.update();
@@ -299,7 +263,6 @@ void Game::update(float deltaTime) {
         if (!hero.isAlive()) {
             gameOver = true;
         }
-
     } catch (const std::exception &e) {
         std::cerr << "Error during game update: " << e.what() << std::endl;
     }
@@ -556,10 +519,32 @@ std::vector<std::string> Game::loadAbilityTextures(const std::string &directory,
         }
         return textures;
     } catch (const std::exception &e) {
-        std::cerr << "Error loading ability textures: " << e.what() << std::endl;
+        std::cerr << "Error loading " << directory << " textures: " << e.what() << std::endl;
         return {};
     }
 }
+
+sf::Texture Game::loadAbilityIcons(const std::string &directory) {
+    try {
+        sf::Texture texture;
+
+        std::string fileName = "assets/";
+        fileName.append(directory);
+        fileName.append("/");
+        fileName.append(directory);
+        fileName.append(" Icon.PNG");
+
+        if (!texture.loadFromFile(fileName)) {
+            throw std::runtime_error("Failed to load texture: " + fileName);
+        }
+        std::cout << directory << " texture loaded succesfully!" << std::endl;
+        return texture;
+    } catch (const std::exception &e) {
+        std::cerr << "Error loading " << directory << " icon: " << e.what() << std::endl;
+        return {};
+    }
+}
+
 
 Game::~Game() {
     try {
