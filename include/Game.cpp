@@ -7,7 +7,7 @@
 
 Game::Game()
     : window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
-      gameOver(false), isPaused(false) {
+      gameOver(false), isPaused(false), abilityCK(false) {
     try {
         std::cout << "Game has started!" << std::endl;
 
@@ -120,11 +120,10 @@ void Game::showAbilitySelection() {
         float windowWidth = static_cast<float>(window.getSize().x);
         float windowHeight = static_cast<float>(window.getSize().y);
 
-        float rectHeight = windowHeight / 2.f; // Height for each rectangle
-        float totalHorizontalSpacing = windowWidth / 6.f; // Total space for the three rectangles and spacing
+        float rectHeight = windowHeight / 2.f;
+        float totalHorizontalSpacing = windowWidth / 6.f;
         float rectWidth = (windowWidth - 2 * totalHorizontalSpacing) / 3.f - totalHorizontalSpacing / 3.f;
-        // Width for each rectangle
-        float spacing = totalHorizontalSpacing / 3.f; // Spacing between the rectangles
+        float spacing = totalHorizontalSpacing / 3.f;
 
         sf::RectangleShape abilityOption1(sf::Vector2f(rectWidth, rectHeight));
         sf::RectangleShape abilityOption2(sf::Vector2f(rectWidth, rectHeight));
@@ -183,6 +182,8 @@ void Game::handleXP() {
         int xpAmount = 10;
         if (hero.getXP()+xpAmount>=hero.getMaxXP()) {
             pauseGame();
+            //Ability check
+            if (abilityCK) unpauseGame();
         }
         hero.addXP(xpAmount);
 

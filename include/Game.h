@@ -25,8 +25,6 @@ public:
 
     void pauseGame();
 
-    bool checkPause() const { return isPaused; }
-
     void showAbilitySelection();
 
     void unpauseGame();
@@ -68,6 +66,7 @@ private:
 
     bool isPaused;
 
+    bool abilityCK;
 };
 
 #endif
