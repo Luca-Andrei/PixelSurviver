@@ -1,4 +1,6 @@
 #include "Ability.h"
+
+#include <cmath>
 #include <iostream>
 #include "Error.h"
 
@@ -73,7 +75,7 @@ void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
     try {
         if (!active || hasDealtDamage) return;
 
-        if (currentFrame == 5) {
+        if (currentFrame == ceil(static_cast<double>(sprites.size()) / 2.f)) {
             for (auto &monster: monsters) {
                 if (monster.getBounds().intersects(sprites[static_cast<std::size_t>(currentFrame)].getGlobalBounds())) {
                     dealDamage(monster);

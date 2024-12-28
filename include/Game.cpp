@@ -7,7 +7,7 @@
 
 Game::Game()
     : window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
-      gameOver(false), isPaused(false), abilityCK(false) {
+      gameOver(false), isPaused(false), spawnRadius(300.f), abilityCK(false) {
     try {
         std::cout << "Game has started!" << std::endl;
 
@@ -304,7 +304,14 @@ void Game::attackMonsters() {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && fireballCooldown.getElapsedTime().asSeconds() >= 5.f) {
             std::cout << "Fireball used against enemies!" << std::endl;
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-            fireballs.emplace_back(loadFireballTextures(), 0.04f);
+            fireballs.emplace_back(loadAbilityTextures("Fireball", 12), 0.04f);
+            fireballs.back().trigger(mousePos);
+            fireballCooldown.restart();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q) && fireballCooldown.getElapsedTime().asSeconds() >= 5.f) {
+            std::cout << "Ability used against enemies!" << std::endl;
+            sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+            fireballs.emplace_back(loadAbilityTextures("Anguish", 13), 0.04f);
             fireballs.back().trigger(mousePos);
             fireballCooldown.restart();
         }
@@ -486,17 +493,34 @@ void Game::drawHealthBars() {
     }
 }
 
-std::vector<std::string> Game::loadFireballTextures() {
+std::vector<std::string> Game::loadAbilityTextures(const std::string &directory, int numTextures) {
     try {
-        std::vector<std::string> fireballTextures;
-        for (int i = 1; i <= 12; ++i) {
-            std::string fileName = "assets/Fireball/Fireball" + std::string(i < 10 ? "000" : "00") + std::to_string(i) +
-                                   ".png";
-            fireballTextures.push_back(fileName);
+        std::vector<std::string> textures;
+        for (int i = 1; i <= numTextures; ++i) {
+            std::string fileName = "assets/";
+
+            fileName.append(directory);
+
+            fileName.append("/");
+
+            fileName.append(directory);
+
+            fileName.append(" ");
+
+            if (i < 10) {
+                fileName += "000" + std::to_string(i);
+            } else if (i < 100) {
+                fileName += "00" + std::to_string(i);
+            } else {
+                fileName += "0" + std::to_string(i);
+            }
+
+            fileName += ".png";
+            textures.push_back(fileName);
         }
-        return fireballTextures;
+        return textures;
     } catch (const std::exception &e) {
-        std::cerr << "Error loading fireball textures: " << e.what() << std::endl;
+        std::cerr << "Error loading ability textures: " << e.what() << std::endl;
         return {};
     }
 }

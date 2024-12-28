@@ -10,63 +10,59 @@
 class Game {
 public:
     Game();
-
     virtual ~Game();
 
     void run();
-
     void processEvents();
-
     virtual void update(float deltaTime);
-
     void render();
-
     void restartGame();
-
     void pauseGame();
-
     void showAbilitySelection();
-
     void unpauseGame();
 
 private:
-    sf::View cameraView;
-    sf::Clock gameClock;
-    sf::Text timerText;
     sf::RenderWindow window;
+    sf::View cameraView;
+
+    sf::Font font;
+
+    bool gameOver;
+    bool isPaused;
+
     Hero hero;
     std::vector<Monster> monsters;
     std::vector<Ability> fireballs;
-    sf::Clock spawnClock;
-    sf::Clock fireballCooldown;
-    bool gameOver;
+
+    sf::Text timerText;
     sf::RectangleShape restartButton;
-    sf::Texture restartTexture;
-    sf::Texture heroTexture;
-    sf::Texture monsterTexture;
-    sf::Font font;
-    sf::Texture fireballIconTexture;
-    sf::Sprite fireballIconSprite;
     sf::RectangleShape abilityContainer;
     sf::RectangleShape xpBar;
     sf::RectangleShape xpFill;
-    sf::Texture grassTexture;
     sf::RectangleShape grassBackground;
-    float spawnRadius{};
+
+    sf::Texture restartTexture;
+    sf::Texture heroTexture;
+    sf::Texture monsterTexture;
+    sf::Texture grassTexture;
+
+    sf::Texture fireballIconTexture;
+    sf::Sprite fireballIconSprite;
+
+    sf::Clock gameClock;
+    sf::Clock spawnClock;
+    sf::Clock fireballCooldown;
+
+    float spawnRadius;
+    bool abilityCK;
 
     void handleXP();
-
     void spawnMonsters();
-
     void attackMonsters();
 
-    static std::vector<std::string> loadFireballTextures();
+    static std::vector<std::string> loadAbilityTextures(const std::string &directory, int numTextures);
 
     void drawHealthBars();
-
-    bool isPaused;
-
-    bool abilityCK;
 };
 
 #endif
