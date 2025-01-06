@@ -31,6 +31,11 @@ Ability::Ability(const std::vector<std::string> &textureFiles, float animationSp
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const Ability &ability) {
+    os << "Is ability active: " << (ability.isActive() ? "Y" : "N") << std::endl;
+    return os;
+}
+
 void Ability::trigger(const sf::Vector2f &newPosition) {
     try {
         if (sprites.empty()) {

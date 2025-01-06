@@ -16,6 +16,8 @@ public:
 
     virtual void draw(sf::RenderWindow &window) const;
 
+    friend std::ostream &operator<<(std::ostream &os, const Entity &entity);
+
 protected:
     sf::Sprite sprite;
 };

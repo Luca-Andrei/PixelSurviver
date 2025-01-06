@@ -29,7 +29,9 @@ public:
 
     sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
 
-    bool getIsDead() const {return isDead;}
+    bool getIsDead() const { return isDead; }
+
+    friend std::ostream &operator<<(std::ostream &os, const Monster &monster);
 
 private:
     int health;

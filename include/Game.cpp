@@ -7,8 +7,9 @@
 #include "Error.h"
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
-      gameOver(false), isPaused(false), spawnRadius(300.f), abilityCK(false) {
+    : gameOver(false), isPaused(false),
+      window(sf::VideoMode(800, 600), "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
+      spawnRadius(300.f), abilityCK(false) {
     try {
         std::cout << "Game has started!" << std::endl;
 
@@ -103,6 +104,42 @@ void Game::run() {
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const Game &game) {
+    os << "running: " << (!game.isPaused ? 'Y' : 'N') << std::endl;
+    os << "game over: " << (game.gameOver ? 'Y' : 'N') << std::endl;
+    os << "window size: (" << static_cast<float>(game.window.getSize().x) << "),(" << static_cast<float>(game.window.
+        getSize().y) << ")" << std::endl;
+    os << "is hero alive: " << (game.hero.isAlive() ? 'Y' : 'N') << std::endl;
+    os << "hero HP: " << game.hero.getHealth() << std::endl;
+    os << "hero xp: " << game.hero.getXP() << std::endl;
+    os << "hero level: " << game.hero.getLevel() << std::endl;
+    os << "hero position: (" << game.hero.getPosition().x << "),(" << game.hero.getPosition().y << ")" << std::endl;
+    return os;
+}
+
+Game &Game::operator=(const Game &other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    std::cout << "operator= de atribuire Game\n";
+
+    this->isPaused = other.isPaused;
+    this->gameOver = other.gameOver;
+    this->hero = other.hero;
+    this->monsters = other.monsters;
+
+    return *this;
+}
+
+Game::Game(const Game &other)
+    : gameOver(other.gameOver), isPaused(other.isPaused), window(
+          sf::VideoMode(other.window.getSize().x, other.window.getSize().y),
+          "PixelSurvivor", sf::Style::Titlebar | sf::Style::Close),
+      spawnRadius(other.spawnRadius), abilityCK(other.abilityCK) {
+    std::cout << "copy constructor" << std::endl;
+}
+
 void Game::pauseGame() {
     std::cout << "Game has been paused!" << std::endl;
     isPaused = true;
@@ -180,7 +217,7 @@ void Game::handleXP() {
         int xpAmount = 10;
         if (hero.getXP() + xpAmount >= hero.getMaxXP()) {
             pauseGame();
-            //Ability check
+
             if (abilityCK) unpauseGame();
         }
         hero.addXP(xpAmount);

@@ -25,6 +25,11 @@ void Entity::move(float offsetX, float offsetY) {
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const Entity &entity) {
+    os << "Entity position : (" << entity.getPosition().x << "),(" << entity.getPosition().y << ")" << std::endl;
+    return os;
+}
+
 void Entity::draw(sf::RenderWindow &window) const {
     try {
         if (!sprite.getTexture()) {

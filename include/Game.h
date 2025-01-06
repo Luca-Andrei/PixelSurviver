@@ -10,25 +10,39 @@
 class Game {
 public:
     Game();
-    virtual ~Game();
+
+    ~Game();
 
     void run();
+
     void processEvents();
-    virtual void update(float deltaTime);
+
+    void update(float deltaTime);
+
     void render();
+
     void restartGame();
+
     void pauseGame();
+
     void showAbilitySelection();
+
     void unpauseGame();
+
+    bool gameOver;
+    bool isPaused;
+
+    friend std::ostream &operator<<(std::ostream &os, const Game &game);
+
+    Game &operator=(const Game &other);
+
+    Game(const Game &other);
 
 private:
     sf::RenderWindow window;
     sf::View cameraView;
 
     sf::Font font;
-
-    bool gameOver;
-    bool isPaused;
 
     Hero hero;
     std::vector<Monster> monsters;
@@ -57,7 +71,9 @@ private:
     bool abilityCK;
 
     void handleXP();
+
     void spawnMonsters();
+
     void attackMonsters();
 
     static std::vector<std::string> loadAbilityTextures(const std::string &directory, int numTextures);

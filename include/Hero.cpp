@@ -13,6 +13,11 @@ Hero::Hero() : xp(100) {
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const Hero &hero) {
+    os << "hero max health: " << hero.getMaxHealth() << std::endl;
+    return os;
+}
+
 Hero::Hero(const sf::Texture &texture, int health) : maxHealth(health), health(health), xp(100) {
     try {
         if (health <= 0) {
@@ -50,7 +55,6 @@ void Hero::levelUp() {
         if (xp.getXP() >= xp.getMaxXP()) {
             xp.levelUp();
             std::cout << "Hero leveled up! Current level: " << xp.getLevel() << std::endl;
-            //game.pause();
             std::cout << "Choose your next ability!" << std::endl;
         }
     } catch (const std::exception &e) {

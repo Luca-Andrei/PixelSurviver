@@ -15,6 +15,12 @@ XP::XP(int maxXP) : xp(0), level(1) {
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const XP &xp) {
+    os << "Current XP: " << xp.getXP() << std::endl;
+    os << "Current LVL: " << xp.getLevel() << std::endl;
+    return os;
+}
+
 void XP::addXP(int amount) {
     try {
         if (amount < 0) {
@@ -41,8 +47,8 @@ void XP::resetLevel() {
 }
 
 void XP::levelUp() {
-        if (xp >= maxXP) {
-            level++;
-            xp = 0;
-        }
+    if (xp >= maxXP) {
+        level++;
+        xp = 0;
+    }
 }

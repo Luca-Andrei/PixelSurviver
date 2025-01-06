@@ -18,6 +18,14 @@ Monster::Monster(const std::string &textureFile, int health, int power)
     }
 }
 
+std::ostream &operator<<(std::ostream &os, const Monster &monster) {
+    os << "Monster hp: " << monster.getHealth() << std::endl;
+    os << "Is monster dead: " << (monster.isDead ? 'Y' : 'N') << std::endl;
+    os << "Monster max hp: " << monster.getMaxHealth() << std::endl;
+    os << "Monster position: (" << monster.getPosition().x << "),(" << monster.getPosition().y << ")" << std::endl;
+    return os;
+}
+
 Monster::Monster(const sf::Texture &texture, int health, int power)
     : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     try {
@@ -70,7 +78,7 @@ void Monster::attack(Hero &hero) {
         if (distance <= attackRange) {
             if (attackCooldown.getElapsedTime().asSeconds() > 0.5f) {
                 hero.takeDamage(power);
-                std::cout << "Monster attacked! Hero HP: " << hero.getSprite().getPosition().y << std::endl;
+                std::cout << "Monster attacked! Hero HP: " << hero.getHealth() << std::endl;
 
                 vibrateAttack();
                 attackCooldown.restart();

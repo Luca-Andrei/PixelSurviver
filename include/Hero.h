@@ -33,6 +33,8 @@ public:
 
     sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
 
+    friend std::ostream &operator<<(std::ostream &os, const Hero &hero);
+
 protected:
     int maxHealth = 100;
     int health = 100;
