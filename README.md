@@ -2,7 +2,12 @@
 
 Acesta este un joc inspirat dupa jocul Vampire Survivors. Scopul este sa se colecteze puncte de experienta si sa se imbunatateasca abilitatile eroului pe parcursul unor nivele care dureaza 15 minute impartite in wave-uri cu monstri si bosi din 5 in 5 minute.
 
-Toate assets-urile au fost preluate de pe site-ul:https://cmski.itch.io/
+Assets:
+-Abilitati:https://cmski.itch.io/tabletop-spellbook-asset-pack
+-Monstrii:https://www.pngegg.com/en/png-nhwsi
+-Eroul:https://www.pngwing.com/en/free-png-yzdxo
+-Butonul de restart este facut de mine.
+-Background:https://arexxuru.itch.io/pixel-floor-texture-pack-ground-tile
 
 ### Important!
 Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar în folder-ul `generated`.
