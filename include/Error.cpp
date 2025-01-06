@@ -1,4 +1,4 @@
-#include "error.h"
+#include "Error.h"
 
 BaseError::BaseError(std::string message) : message(std::move(message)) {
 }
