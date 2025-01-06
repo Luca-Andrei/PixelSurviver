@@ -30,7 +30,7 @@ Monster::Monster(const sf::Texture &texture, int health, int power)
     : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
     try {
         if (health <= 0 || power <= 0) {
-            throw GameError("Health and power must be positive values.");
+            throw MonsterError("Health and power must be positive values.");
         }
 
         sprite.setTexture(texture);
@@ -94,7 +94,7 @@ void Monster::takeDamage(int damage) {
         checkIfDead();
 
         if (damage < 0) {
-            throw GameError("Damage cannot be negative.");
+            throw MonsterError("Damage cannot be negative.");
         }
 
         health -= damage;

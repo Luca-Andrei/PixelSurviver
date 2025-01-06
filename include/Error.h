@@ -4,14 +4,19 @@
 #include <exception>
 #include <string>
 
-class EntityError : public std::exception {
+class BaseError : public std::exception {
 public:
-    explicit EntityError(std::string message);
+    explicit BaseError(std::string message);
 
     [[nodiscard]] const char *what() const noexcept override;
 
 protected:
     std::string message;
+};
+
+class EntityError : public BaseError {
+public:
+    explicit EntityError(std::string message);
 };
 
 class MonsterError : public EntityError {
@@ -54,4 +59,4 @@ private:
     std::string message;
 };
 
-#endif
+#endif // ERROR_H
