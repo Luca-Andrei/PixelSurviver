@@ -126,7 +126,36 @@ Game &Game::operator=(const Game &other) {
 
     this->isPaused = other.isPaused;
     this->gameOver = other.gameOver;
+    this->spawnRadius = other.spawnRadius;
+
+    this->cameraView = other.cameraView;
+    this->font = other.font;
+
     this->hero = other.hero;
+    this->monsters = other.monsters;
+    this->fireballs = other.fireballs;
+
+    this->timerText = other.timerText;
+    this->restartButton = other.restartButton;
+    this->abilityContainer = other.abilityContainer;
+    this->xpBar = other.xpBar;
+    this->xpFill = other.xpFill;
+    this->grassBackground = other.grassBackground;
+
+    this->restartTexture = other.restartTexture;
+    this->heroTexture = other.heroTexture;
+    this->monsterTexture = other.monsterTexture;
+    this->grassTexture = other.grassTexture;
+
+    this->fireballIconTexture = other.fireballIconTexture;
+    this->fireballIconSprite = other.fireballIconSprite;
+
+    this->gameClock = other.gameClock;
+    this->spawnClock = other.spawnClock;
+    this->fireballCooldown = other.fireballCooldown;
+
+    this->abilityCK = other.abilityCK;
+
     return *this;
 }
 
