@@ -127,7 +127,6 @@ Game &Game::operator=(const Game &other) {
     this->isPaused = other.isPaused;
     this->gameOver = other.gameOver;
     this->hero = other.hero;
-
     return *this;
 }
 
