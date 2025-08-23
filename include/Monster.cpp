@@ -1,159 +1,199 @@
 #include "Monster.h"
+#include "Hero.h"
 #include <iostream>
 #include <cmath>
 #include "Error.h"
 
-Monster::Monster(const std::string &textureFile, int health, int power)
-    : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
-    try {
-        sf::Texture texture;
-        if (!texture.loadFromFile(textureFile)) {
-            throw TextureLoadError("Failed to load texture from file: " + textureFile);
-        }
-        sprite.setTexture(texture);
-    } catch (const TextureLoadError &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
-    }
+Monster::Monster() : health(50), maxHealth(50), power(5), isDead(false), 
+                     currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
+    initializeAnimations();
 }
 
-std::ostream &operator<<(std::ostream &os, const Monster &monster) {
-    os << "Monster hp: " << monster.getHealth() << std::endl;
-    os << "Is monster dead: " << (monster.isDead ? 'Y' : 'N') << std::endl;
-    os << "Monster max hp: " << monster.getMaxHealth() << std::endl;
-    os << "Monster position: (" << monster.getPosition().x << "),(" << monster.getPosition().y << ")" << std::endl;
-    return os;
+Monster::Monster(const std::string &textureFile, int health, int power)
+    : health(health), maxHealth(health), power(power), isDead(false),
+      currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
+    sf::Texture texture;
+    if (!texture.loadFromFile(textureFile)) {
+        throw TextureLoadError("Error loading monster texture!");
+    }
+    sprite.setTexture(texture);
+    // Scale down the monster sprite to a reasonable size
+    sprite.setScale(0.1f, 0.1f);
+    initializeAnimations();
 }
 
 Monster::Monster(const sf::Texture &texture, int health, int power)
-    : health(health), maxHealth(health), power(power), isDead(false), lastDirection(0.0f, 0.0f) {
-    try {
-        if (health <= 0 || power <= 0) {
-            throw MonsterError("Health and power must be positive values.");
-        }
+    : health(health), maxHealth(health), power(power), isDead(false),
+      currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
+    sprite.setTexture(texture);
+    // Scale down the monster sprite to a reasonable size
+    sprite.setScale(0.1f, 0.1f);
+    initializeAnimations();
+}
 
-        sprite.setTexture(texture);
-        sprite.setScale(0.08f, 0.08f);
-    } catch (const GameError &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
-    }
+Monster::Monster(int health, int power)
+    : health(health), maxHealth(health), power(power), isDead(false), 
+      currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
+    initializeAnimations();
+}
+
+Monster::Monster(const Monster &other) = default;
+
+Monster::Monster(Monster &&other) noexcept = default;
+
+// Destructor is defaulted in header
+
+Monster &Monster::operator=(const Monster &other) = default;
+
+Monster &Monster::operator=(Monster &&other) noexcept = default;
+
+void Monster::initializeAnimations() {
+    // Basic animation setup for old sprite system
+    currentState = "idle";
+}
+
+void Monster::setPosition(float x, float y) {
+    sprite.setPosition(x, y);
+}
+
+sf::Vector2f Monster::getPosition() const {
+    return sprite.getPosition();
+}
+
+sf::FloatRect Monster::getBounds() const {
+    return sprite.getGlobalBounds();
 }
 
 void Monster::moveTowards(const sf::Vector2f &target, float deltaTime) {
-    try {
-        checkIfDead();
-
-        if (deltaTime <= 0.0f) {
-            throw GameError("Delta time must be greater than zero.");
+    if (isDead) return;
+    
+    targetPosition = target;
+    
+    // Calculate direction to target
+    sf::Vector2f direction = target - sprite.getPosition();
+    float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    
+    if (distance > attackRange) {
+        // Normalize direction and move
+        if (distance > 0) {
+            direction = direction / distance;
+            sf::Vector2f newPosition = sprite.getPosition() + direction * moveSpeed * deltaTime;
+            sprite.setPosition(newPosition);
+            
+            // Update animation state
+            setAnimationState("walk");
+            setDirection(direction);
         }
-
-        sf::Vector2f direction = target - sprite.getPosition();
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
-        if (length >= 5.0f) {
-            direction /= length;
-            sprite.move(direction * 100.0f * deltaTime);
-            lastDirection = direction;
-        }
-    } catch (const GameError &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    } else {
+        // In attack range
+        setAnimationState("idle");
     }
+    
+    lastDirection = direction;
 }
 
 void Monster::attack(Hero &hero) {
-    try {
-        checkIfDead();
-
-        float attackRange = 5.0f;
-        auto distance = std::sqrt(
-            std::pow(sprite.getPosition().x - hero.getSprite().getPosition().x, 2) +
-            std::pow(sprite.getPosition().y - hero.getSprite().getPosition().y, 2)
-        );
-
-        if (distance <= attackRange) {
-            if (attackCooldown.getElapsedTime().asSeconds() > 0.5f) {
-                hero.takeDamage(power);
-                std::cout << "Monster attacked! Hero HP: " << hero.getHealth() << std::endl;
-
-                vibrateAttack();
-                attackCooldown.restart();
-            }
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during attack: " << e.what() << std::endl;
+    if (isDead || attackCooldown.getElapsedTime().asSeconds() < 1.0f) {
+        return;
     }
+    
+    // Play attack animation
+    setAnimationState("attack");
+    
+    // Deal damage to hero
+    hero.takeDamage(power);
+    
+    // Reset attack cooldown
+    attackCooldown.restart();
+    
+    std::cout << "Monster attacks hero for " << power << " damage!" << std::endl;
 }
 
 void Monster::takeDamage(int damage) {
-    try {
-        checkIfDead();
-
-        if (damage < 0) {
-            throw MonsterError("Damage cannot be negative.");
-        }
-
-        health -= damage;
-        std::cout << "Monster takes " << damage << " damage! Remaining health: " << health << std::endl;
-
-        if (health <= 0) {
-            isDead = true;
-            std::cout << "Monster is dead!" << std::endl;
-        }
-    } catch (const GameError &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    if (isDead) return;
+    
+    health -= damage;
+    
+    // Play hit animation
+    setAnimationState("hit");
+    
+    if (health <= 0) {
+        health = 0;
+        isDead = true;
+        setAnimationState("death");
+        std::cout << "Monster defeated!" << std::endl;
+    } else {
+        std::cout << "Monster took " << damage << " damage! Health: " << health << std::endl;
     }
 }
 
 void Monster::draw(sf::RenderWindow &window) const {
-    try {
-        if (!isDead) {
-            window.draw(sprite);
+    if (isDead) return;
+    
+    window.draw(sprite);
+}
+
+void Monster::checkIfDead() {
+    if (health <= 0) {
+        std::cout << "Monster is dead!" << std::endl;
+    }
+}
+
+void Monster::updateAnimation(float deltaTime) {
+    // Basic animation update for old sprite system
+    (void)deltaTime; // Suppress unused parameter warning
+}
+
+void Monster::setAnimationState(const std::string& state) {
+    if (currentState == state) return;
+    
+    currentState = state;
+    stateTimer.restart();
+}
+
+void Monster::updateMovementAnimation(const sf::Vector2f& direction) {
+    if (std::abs(direction.x) > 0.1f || std::abs(direction.y) > 0.1f) {
+        setAnimationState("walk");
+        setDirection(direction);
+    } else {
+        setAnimationState("idle");
+    }
+}
+
+void Monster::setDirection(const sf::Vector2f& direction) {
+    if (std::abs(direction.x) > std::abs(direction.y)) {
+        // Horizontal movement
+        if (direction.x > 0) {
+            // Face right
+        } else {
+            // Face left
         }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during drawing: " << e.what() << std::endl;
+    } else {
+        // Vertical movement
+        if (direction.y > 0) {
+            // Face down
+        } else {
+            // Face up
+        }
     }
 }
 
 void Monster::vibrateAttack() {
-    try {
-        if (vibrateCooldown.getElapsedTime().asSeconds() > 0.05f) {
-            sf::Vector2f reverseDirection = -lastDirection;
-
-            float vibrationDistance = 50.0f;
-
-            sprite.move(reverseDirection * vibrationDistance);
-
-            vibrateCooldown.restart();
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during vibration: " << e.what() << std::endl;
-    }
+    if (vibrateCooldown.getElapsedTime().asSeconds() < 0.1f) return;
+    
+    // Add a small random offset to create vibration effect
+    float offsetX = (rand() % 6 - 3) * 0.5f;
+    float offsetY = (rand() % 6 - 3) * 0.5f;
+    
+    sf::Vector2f currentPos = sprite.getPosition();
+    sprite.setPosition(currentPos.x + offsetX, currentPos.y + offsetY);
+    
+    vibrateCooldown.restart();
 }
 
-void Monster::checkIfDead() const {
-    try {
-        if (isDead) {
-            throw TextureLoadError("Cannot perform this action on a dead monster!");
-        }
-    } catch (const TextureLoadError &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
-    }
-}
-
-Monster::~Monster() {
-    health = 0;
-    power = 0;
-    isDead = true;
-
-    sprite = sf::Sprite();
-    lastDirection = sf::Vector2f(0.0f, 0.0f);
+std::ostream &operator<<(std::ostream &os, const Monster &monster) {
+    os << "Monster - Health: " << monster.getHealth() << "/" << monster.getMaxHealth()
+       << ", Power: " << monster.getPower() << ", Position: (" 
+       << monster.getPosition().x << ", " << monster.getPosition().y << ")";
+    return os;
 }

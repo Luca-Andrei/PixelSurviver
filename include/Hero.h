@@ -1,44 +1,59 @@
 #ifndef HERO_H
 #define HERO_H
 
-#include <SFML/Graphics.hpp>
-#include "XP.h"
 #include "Entity.h"
+#include "XP.h"
+#include <SFML/Graphics.hpp>
 
 class Hero : public Entity {
 public:
     Hero();
-
     Hero(const sf::Texture &texture, int health);
+    Hero(const Hero &other);
+    Hero(Hero &&other) noexcept;
+    ~Hero() override = default;
 
-    ~Hero() override;
+    Hero &operator=(const Hero &other);
+    Hero &operator=(Hero &&other) noexcept;
 
     void addXP(int amount);
-
     void levelUp();
-
     void takeDamage(int damage);
+    void reset();
+    void resetXP();
+    void completeLevelUp();
+
+    [[nodiscard]] bool isAlive() const;
+    [[nodiscard]] int getHealth() const;
+    [[nodiscard]] int getMaxHealth() const;
+    [[nodiscard]] int getXP() const;
+    [[nodiscard]] int getMaxXP() const;
+    [[nodiscard]] int getLevel() const;
+
+    void draw(sf::RenderWindow &window) const override;
 
     void setPosition(float x, float y);
+    void move(float offsetX, float offsetY);
+    sf::Vector2f getPosition() const;
+    sf::FloatRect getBounds() const;
 
-    bool isAlive() const { return health > 0; }
+    void updateAnimation(float deltaTime);
+    void updateMovementAnimation(const sf::Vector2f& movement);
+    void setDirection(const sf::Vector2f& direction);
+    void setAnimationState(const std::string& state);
 
-    int getHealth() const { return health; }
-    int getLevel() const { return xp.getLevel(); }
-    int getMaxHealth() const { return maxHealth; }
-    int getXP() const { return xp.getXP(); }
-    int getMaxXP() const { return xp.getMaxXP(); }
-
-    void reset();
-
-    sf::FloatRect getBounds() const { return sprite.getGlobalBounds(); }
-
-    friend std::ostream &operator<<(std::ostream &os, const Hero &hero);
-
-protected:
-    int maxHealth = 100;
-    int health = 100;
+private:
+    int health;
+    int maxHealth;
     XP xp;
+    std::string currentState;
+    bool isMoving;
+    sf::Vector2f lastMovement;
+    sf::Clock stateTimer;
+
+    void initializeAnimations();
 };
 
-#endif
+std::ostream &operator<<(std::ostream &os, const Hero &hero);
+
+#endif // HERO_H

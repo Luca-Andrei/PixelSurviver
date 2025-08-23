@@ -32,26 +32,20 @@ elseif(UNIX)
 endif()
 
 
-add_executable(${PROJECT_NAME}
-    main.cpp
-    generated/src/Helper.cpp
-    env_fixes.h
+add_executable(oop
+        main.cpp
+        include/Game.cpp
         include/Hero.cpp
         include/Monster.cpp
-        include/Monster.h
-        include/Game.cpp
-        include/Game.h
-        include/Game.cpp
-        include/Hero.h
         include/Ability.cpp
-        include/Ability.h
-        include/XP.cpp
-        include/XP.h
         include/XP.cpp
         include/Entity.cpp
-        include/Entity.h
         include/Error.cpp
-        include/Error.h
+        include/GameObserver.cpp
+        include/AbilityFactory.cpp
+        include/GameLogger.cpp
+
+        generated/src/Helper.cpp
 )
 
 include(cmake/CompilerFlags.cmake)
@@ -82,5 +76,6 @@ endif()
 
 include(cmake/CopyHelper.cmake)
 
-copy_files(DIRECTORY assets)
+# Assets are generated dynamically by Python script
+# copy_files(DIRECTORY assets)
 configure_file(${CMAKE_SOURCE_DIR}/tastatura.txt ${CMAKE_BINARY_DIR}/tastatura.txt COPYONLY)

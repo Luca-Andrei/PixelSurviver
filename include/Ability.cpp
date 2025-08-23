@@ -1,75 +1,86 @@
 #include "Ability.h"
-
-#include <cmath>
 #include <iostream>
-#include "Error.h"
+#include <cmath>
 
 Ability::Ability(const std::vector<std::string> &textureFiles, float animationSpeed)
-    : animationSpeed(animationSpeed), currentFrame(0), active(false), hasDealtDamage(false) {
-    try {
-        if (textureFiles.empty()) {
-            throw GameError("Texture files list is empty.");
-        }
+    : animationSpeed(animationSpeed), currentState("idle"), active(false), 
+      hasDealtDamage(false), damageRadius(500.0f), duration(6.0f), currentDuration(0.0f) {
+    
+    initializeAnimations(textureFiles);
+}
 
-        for (const auto &textureFile: textureFiles) {
+Ability::~Ability() = default;
+
+void Ability::initializeAnimations(const std::vector<std::string>& textureFiles) {
+    try {
+        // Load textures for old sprite system
+        for (const auto& textureFile : textureFiles) {
             sf::Texture texture;
-            if (!texture.loadFromFile(textureFile)) {
-                throw TextureLoadError("Error loading texture: " + textureFile);
+            if (texture.loadFromFile(textureFile)) {
+                textures.push_back(texture);
+            } else {
+                std::cerr << "Failed to load texture: " << textureFile << std::endl;
             }
-            textures.push_back(texture);
         }
-
-        for (auto &texture: textures) {
-            sf::Sprite sprite;
-            sprite.setTexture(texture);
-            sprite.setScale(5.f, 5.f);
-            sprites.push_back(sprite);
+        
+        if (!textures.empty()) {
+            sprite.setTexture(textures[0]);
+            // Set default scale for abilities - half the previous size
+            sprite.setScale(15.0f, 15.0f);
         }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during Ability construction: " << e.what() << std::endl;
-        throw;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error initializing ability animations: " << e.what() << std::endl;
     }
 }
 
-std::ostream &operator<<(std::ostream &os, const Ability &ability) {
-    os << "Is ability active: " << (ability.isActive() ? "Y" : "N") << std::endl;
-    return os;
+void Ability::trigger(const sf::Vector2f &position) {
+    this->position = position;
+    active = true;
+    hasDealtDamage = false;
+    currentDuration = 0.0f;
+    
+    // Set position and play cast animation
+    // Center the ability at the cursor position
+    // Use the scaled dimensions: original texture size * scale
+    float scaledWidth = textures[0].getSize().x * 15.0f;
+    float scaledHeight = textures[0].getSize().y * 15.0f;
+    sprite.setPosition(position.x - (scaledWidth / 2), 
+                      position.y - (scaledHeight / 2));
+    setAnimationState("cast");
+    
+    std::cout << "Ability triggered at position (" << position.x << ", " << position.y << ")" << std::endl;
 }
 
-void Ability::trigger(const sf::Vector2f &newPosition) {
-    try {
-        if (sprites.empty()) {
-            throw GameError("Cannot trigger ability: no sprites loaded.");
-        }
+void Ability::setPosition(float x, float y) {
+    sprite.setPosition(x, y);
+}
 
-        position = newPosition;
-        currentFrame = 0;
-        active = true;
-        hasDealtDamage = false;
-
-        for (auto &sprite: sprites) {
-            sf::FloatRect bounds = sprite.getGlobalBounds();
-            sprite.setPosition(newPosition.x - bounds.width / 2, newPosition.y - bounds.height / 2);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during Ability trigger: " << e.what() << std::endl;
-    }
+sf::Vector2f Ability::getPosition() const {
+    return sprite.getPosition();
 }
 
 void Ability::update() {
-    try {
-        if (!active) return;
-
-        if (animationClock.getElapsedTime().asSeconds() > animationSpeed) {
-            animationClock.restart();
-            currentFrame++;
-            if (currentFrame >= static_cast<float>(sprites.size())) {
-                active = false;
-            }
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error during Ability update: " << e.what() << std::endl;
+    if (!active) return;
+    
+    // Update animation
+    updateAnimation(1.0f / 60.0f); // Assuming 60 FPS
+    
+    // Update ability logic
+    updateAbilityLogic(1.0f / 60.0f);
+    
+    // Check if ability duration has expired
+    currentDuration += 1.0f / 60.0f;
+    if (currentDuration >= duration) {
+        active = false;
+        setAnimationState("idle");
     }
+}
+
+void Ability::updateAbilityLogic(float deltaTime) {
+    (void)deltaTime; // Suppress unused parameter warning
+    // Add any additional ability logic here
+    // For example, expanding damage radius, moving projectiles, etc.
 }
 
 bool Ability::isActive() const {
@@ -77,55 +88,52 @@ bool Ability::isActive() const {
 }
 
 void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
-    try {
-        if (!active || hasDealtDamage) return;
-
-        if (currentFrame == ceil(static_cast<double>(sprites.size()) / 2.f)) {
-            for (auto &monster: monsters) {
-                if (monster.getBounds().intersects(sprites[static_cast<std::size_t>(currentFrame)].getGlobalBounds())) {
-                    dealDamage(monster);
-                }
-            }
-
-            hasDealtDamage = true;
+    if (!active) return;
+    
+    sf::FloatRect abilityBounds = sprite.getGlobalBounds();
+    int monstersHit = 0;
+    
+    for (auto &monster : monsters) {
+        if (monster.getIsDead()) continue;
+        
+        sf::FloatRect monsterBounds = monster.getBounds();
+        
+        if (abilityBounds.intersects(monsterBounds)) {
+            dealDamage(monster);
+            monstersHit++;
+            
+            std::cout << "Ability hit monster! Total hit: " << monstersHit << std::endl;
         }
-    } catch (const std::exception &e) {
-        std::cerr << "Error checking collision with monsters: " << e.what() << std::endl;
     }
-}
-
-void Ability::dealDamage(Monster &monster) {
-    try {
-        if (monster.getIsDead()) {
-            throw GameError("Cannot deal damage to a dead monster.");
-        }
-        monster.takeDamage(50);
-    } catch (const std::exception &e) {
-        std::cerr << "Error dealing damage to monster: " << e.what() << std::endl;
+    
+    if (monstersHit > 0) {
+        // Play hit effect
+        setAnimationState("idle");
     }
 }
 
 void Ability::draw(sf::RenderWindow &window) const {
-    try {
-        if (!active) return;
-
-        if (currentFrame < 0 || static_cast<std::size_t>(currentFrame) >= sprites.size()) {
-            throw GameError("Invalid sprite frame index.");
-        }
-
-        window.draw(sprites[static_cast<std::size_t>(currentFrame)]);
-    } catch (const std::exception &e) {
-        std::cerr << "Error drawing ability: " << e.what() << std::endl;
-    }
+    if (!active) return;
+    
+    window.draw(sprite);
 }
 
-Ability::~Ability() {
-    try {
-        textures.clear();
-        sprites.clear();
-        currentFrame = 0;
-        active = false;
-    } catch (const std::exception &e) {
-        std::cerr << "Error during Ability destruction: " << e.what() << std::endl;
-    }
+void Ability::dealDamage(Monster &monster) {
+    monster.takeDamage(25); // Base damage
+}
+
+void Ability::updateAnimation(float deltaTime) {
+    // Basic animation update for old sprite system
+    (void)deltaTime; // Suppress unused parameter warning
+}
+
+void Ability::setAnimationState(const std::string& state) {
+    if (currentState == state) return;
+    
+    currentState = state;
+    stateTimer.restart();
+}
+
+sf::FloatRect Ability::getBounds() const {
+    return sprite.getGlobalBounds();
 }

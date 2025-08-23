@@ -1,9 +1,7 @@
 #ifndef XP_H
 #define XP_H
 
-#include "Entity.h"
-
-class XP : public Entity {
+class XP {
 public:
     explicit XP(int maxXP = 100);
 
@@ -18,6 +16,7 @@ public:
     void resetLevel();
 
     void levelUp();
+    void forceLevelUp(); // Force level up without checking XP condition
 
     void levelUpAbilities();
 

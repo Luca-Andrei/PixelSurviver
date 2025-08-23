@@ -28,9 +28,10 @@ void XP::addXP(int amount) {
         }
 
         xp += amount;
-        if (xp >= maxXP) {
-            levelUp();
-        }
+        // Don't auto-level up here - let the Game class handle it
+        // if (xp >= maxXP) {
+        //     levelUp();
+        // }
     } catch (const GameError &e) {
         std::cerr << "Error: " << e.what() << std::endl;
     } catch (const std::exception &e) {
@@ -51,4 +52,9 @@ void XP::levelUp() {
         level++;
         xp = 0;
     }
+}
+
+void XP::forceLevelUp() {
+    level++;
+    // Don't reset XP here since it's already been reset by the Game
 }
