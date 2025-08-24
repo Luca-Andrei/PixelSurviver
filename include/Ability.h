@@ -8,7 +8,7 @@
 
 class Ability {
 public:
-    Ability(const std::vector<std::string> &textureFiles, float animationSpeed);
+    Ability(const std::vector<std::string> &textureFiles);
 
     ~Ability();
 
@@ -20,7 +20,7 @@ public:
 
     void update();
 
-    [[nodiscard]] bool isActive() const;
+
 
     void checkCollisionWithMonsters(std::vector<Monster> &monsters);
 
@@ -29,28 +29,23 @@ public:
     static void dealDamage(Monster &monster);
     
     // Basic animation control
-    void updateAnimation(float deltaTime);
     void setAnimationState(const std::string& state);
     sf::FloatRect getBounds() const;
 
 private:
     std::vector<sf::Texture> textures;
     sf::Sprite sprite;
-    float animationSpeed;
     std::string currentState;
     bool active;
-    bool hasDealtDamage;
     sf::Vector2f position;
     sf::Clock animationClock;
     sf::Clock stateTimer;
     
     // Ability properties
-    float damageRadius;
     float duration;
     float currentDuration;
     
     void initializeAnimations(const std::vector<std::string>& textureFiles);
-    void updateAbilityLogic(float deltaTime);
 };
 
 #endif

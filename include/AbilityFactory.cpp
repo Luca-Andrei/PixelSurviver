@@ -3,53 +3,53 @@
 
 std::unique_ptr<Ability> FireballCreator::createAbility() {
     std::vector<std::string> fireballTextures = {
-        "../assets/Fireball/Fireball 0001.png",
-        "../assets/Fireball/Fireball 0002.png",
-        "../assets/Fireball/Fireball 0003.png",
-        "../assets/Fireball/Fireball 0004.png",
-        "../assets/Fireball/Fireball 0005.png",
-        "../assets/Fireball/Fireball 0006.png",
-        "../assets/Fireball/Fireball 0007.png",
-        "../assets/Fireball/Fireball 0008.png",
-        "../assets/Fireball/Fireball 0009.png",
-        "../assets/Fireball/Fireball 0010.png",
-        "../assets/Fireball/Fireball 0011.png",
-        "../assets/Fireball/Fireball 0012.png"
+        "assets/Fireball/Fireball 0001.png",
+        "assets/Fireball/Fireball 0002.png",
+        "assets/Fireball/Fireball 0003.png",
+        "assets/Fireball/Fireball 0004.png",
+        "assets/Fireball/Fireball 0005.png",
+        "assets/Fireball/Fireball 0006.png",
+        "assets/Fireball/Fireball 0007.png",
+        "assets/Fireball/Fireball 0008.png",
+        "assets/Fireball/Fireball 0009.png",
+        "assets/Fireball/Fireball 0010.png",
+        "assets/Fireball/Fireball 0011.png",
+        "assets/Fireball/Fireball 0012.png"
     };
-    return std::make_unique<Ability>(fireballTextures, 0.5f);
+    return std::make_unique<Ability>(fireballTextures);
 }
 
 std::unique_ptr<Ability> IceSpireCreator::createAbility() {
     std::vector<std::string> iceSpireTextures = {
-        "../assets/Ice Spire/Ice Spire 0001.png",
-        "../assets/Ice Spire/Ice Spire 0002.png",
-        "../assets/Ice Spire/Ice Spire 0003.png",
-        "../assets/Ice Spire/Ice Spire 0004.png",
-        "../assets/Ice Spire/Ice Spire 0005.png",
-        "../assets/Ice Spire/Ice Spire 0006.png",
-        "../assets/Ice Spire/Ice Spire 0007.png",
-        "../assets/Ice Spire/Ice Spire 0008.png",
-        "../assets/Ice Spire/Ice Spire 0009.png",
-        "../assets/Ice Spire/Ice Spire 0010.png"
+        "assets/Ice Spire/Ice Spire 0001.png",
+        "assets/Ice Spire/Ice Spire 0002.png",
+        "assets/Ice Spire/Ice Spire 0003.png",
+        "assets/Ice Spire/Ice Spire 0004.png",
+        "assets/Ice Spire/Ice Spire 0005.png",
+        "assets/Ice Spire/Ice Spire 0006.png",
+        "assets/Ice Spire/Ice Spire 0007.png",
+        "assets/Ice Spire/Ice Spire 0008.png",
+        "assets/Ice Spire/Ice Spire 0009.png",
+        "assets/Ice Spire/Ice Spire 0010.png"
     };
-    return std::make_unique<Ability>(iceSpireTextures, 0.3f);
+    return std::make_unique<Ability>(iceSpireTextures);
 }
 
 std::unique_ptr<Ability> PlasmaStormCreator::createAbility() {
     std::vector<std::string> plasmaStormTextures = {
-        "../assets/Plasma Storm/Plasma Storm 0001.png",
-        "../assets/Plasma Storm/Plasma Storm 0002.png",
-        "../assets/Plasma Storm/Plasma Storm 0003.png",
-        "../assets/Plasma Storm/Plasma Storm 0004.png",
-        "../assets/Plasma Storm/Plasma Storm 0005.png",
-        "../assets/Plasma Storm/Plasma Storm 0006.png",
-        "../assets/Plasma Storm/Plasma Storm 0007.png",
-        "../assets/Plasma Storm/Plasma Storm 0008.png",
-        "../assets/Plasma Storm/Plasma Storm 0009.png",
-        "../assets/Plasma Storm/Plasma Storm 0010.png",
-        "../assets/Plasma Storm/Plasma Storm 0011.png"
+        "assets/Plasma Storm/Plasma Storm 0001.png",
+        "assets/Plasma Storm/Plasma Storm 0002.png",
+        "assets/Plasma Storm/Plasma Storm 0003.png",
+        "assets/Plasma Storm/Plasma Storm 0004.png",
+        "assets/Plasma Storm/Plasma Storm 0005.png",
+        "assets/Plasma Storm/Plasma Storm 0006.png",
+        "assets/Plasma Storm/Plasma Storm 0007.png",
+        "assets/Plasma Storm/Plasma Storm 0008.png",
+        "assets/Plasma Storm/Plasma Storm 0009.png",
+        "assets/Plasma Storm/Plasma Storm 0010.png",
+        "assets/Plasma Storm/Plasma Storm 0011.png"
     };
-    return std::make_unique<Ability>(plasmaStormTextures, 0.5f);
+    return std::make_unique<Ability>(plasmaStormTextures);
 }
 
 // Static member initialization

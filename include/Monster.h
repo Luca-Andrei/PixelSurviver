@@ -22,20 +22,14 @@ public:
     Monster &operator=(Monster &&other) noexcept;
 
     void setPosition(float x, float y);
-    sf::Vector2f getPosition() const;
     sf::FloatRect getBounds() const;
 
     void moveTowards(const sf::Vector2f &target, float deltaTime);
     void attack(Hero &hero);
     void takeDamage(int damage);
-    void checkIfDead();
-
     void draw(sf::RenderWindow &window) const override;
 
-    void updateAnimation(float deltaTime);
     void updateMovementAnimation(const sf::Vector2f& direction);
-    void setDirection(const sf::Vector2f& direction);
-    void vibrateAttack();
     void setAnimationState(const std::string& state);
 
     [[nodiscard]] bool getIsDead() const { return isDead; }
@@ -55,7 +49,6 @@ private:
     sf::Vector2f lastDirection;
     sf::Clock attackCooldown;
     sf::Clock stateTimer;
-    sf::Clock vibrateCooldown;
 
     void initializeAnimations();
 };

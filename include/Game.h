@@ -16,7 +16,7 @@
 class Game : public GameSubject {
 public:
     Game();
-    ~Game();
+    ~Game() override;
 
     Game(const Game &other);
     Game(Game &&other) noexcept;
@@ -88,7 +88,7 @@ private:
     void spawnMonsters();
     void attackMonsters();
     void handleHeroMovement();
-    void handleXP();
+
     void restartGame();
     void drawHealthBars();
     void pauseGame();
@@ -100,11 +100,11 @@ private:
     void addAbilityToPool(const std::string& abilityType);
     void selectAbility(const std::string& abilityType);
     void renderAbilityUI();
-    std::string getKeyName(sf::Keyboard::Key key);
+    static std::string getKeyName(sf::Keyboard::Key key);
     
     // Utility methods
-    std::vector<std::string> loadAbilityTextures(const std::string &directory, int numTextures);
-    sf::Texture loadAbilityIcons(const std::string &directory);
+
+    static sf::Texture loadAbilityIcons(const std::string &directory);
     void loadAllAbilityIcons();
     
     // Observer pattern methods

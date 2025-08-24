@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
 
+# Set CMake policies to suppress warnings
+cmake_policy(SET CMP0077 NEW)
+# cmake_policy(SET CMP0177 NEW)  # Commented out due to compatibility issues
+
 project(oop)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -76,6 +80,13 @@ endif()
 
 include(cmake/CopyHelper.cmake)
 
-# Assets are generated dynamically by Python script
-# copy_files(DIRECTORY assets)
+# Copy assets folder to build directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+        COMMENT "Copying assets folder to build directory"
+)
+
+# Copy tastatura.txt
 configure_file(${CMAKE_SOURCE_DIR}/tastatura.txt ${CMAKE_BINARY_DIR}/tastatura.txt COPYONLY)

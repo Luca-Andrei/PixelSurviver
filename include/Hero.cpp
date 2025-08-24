@@ -3,13 +3,11 @@
 #include "Error.h"
 
 Hero::Hero() : health(100), maxHealth(100), xp(100), currentState("idle"), isMoving(false) {
-    initializeAnimations();
 }
 
 Hero::Hero(const sf::Texture &texture, int health) 
     : health(health), maxHealth(health), xp(100), currentState("idle"), isMoving(false) {
     sprite.setTexture(texture);
-    initializeAnimations();
 }
 
 Hero::Hero(const Hero &other) = default;
@@ -21,11 +19,6 @@ Hero::Hero(Hero &&other) noexcept = default;
 Hero &Hero::operator=(const Hero &other) = default;
 
 Hero &Hero::operator=(Hero &&other) noexcept = default;
-
-void Hero::initializeAnimations() {
-    // Basic animation setup for old sprite system
-    currentState = "idle";
-}
 
 void Hero::addXP(int amount) {
     xp.addXP(amount);
@@ -65,9 +58,7 @@ void Hero::move(float offsetX, float offsetY) {
     sprite.move(offsetX, offsetY);
 }
 
-sf::Vector2f Hero::getPosition() const {
-    return sprite.getPosition();
-}
+
 
 sf::FloatRect Hero::getBounds() const {
     return sprite.getGlobalBounds();
@@ -123,11 +114,6 @@ int Hero::getMaxXP() const {
 
 int Hero::getLevel() const {
     return xp.getLevel();
-}
-
-void Hero::updateAnimation(float deltaTime) {
-    // Basic animation update for old sprite system
-    (void)deltaTime; // Suppress unused parameter warning
 }
 
 void Hero::setAnimationState(const std::string& state) {

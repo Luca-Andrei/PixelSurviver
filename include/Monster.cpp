@@ -6,7 +6,6 @@
 
 Monster::Monster() : health(50), maxHealth(50), power(5), isDead(false), 
                      currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
-    initializeAnimations();
 }
 
 Monster::Monster(const std::string &textureFile, int health, int power)
@@ -19,7 +18,6 @@ Monster::Monster(const std::string &textureFile, int health, int power)
     sprite.setTexture(texture);
     // Scale down the monster sprite to a reasonable size
     sprite.setScale(0.1f, 0.1f);
-    initializeAnimations();
 }
 
 Monster::Monster(const sf::Texture &texture, int health, int power)
@@ -28,13 +26,11 @@ Monster::Monster(const sf::Texture &texture, int health, int power)
     sprite.setTexture(texture);
     // Scale down the monster sprite to a reasonable size
     sprite.setScale(0.1f, 0.1f);
-    initializeAnimations();
 }
 
 Monster::Monster(int health, int power)
     : health(health), maxHealth(health), power(power), isDead(false), 
       currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
-    initializeAnimations();
 }
 
 Monster::Monster(const Monster &other) = default;
@@ -47,18 +43,11 @@ Monster &Monster::operator=(const Monster &other) = default;
 
 Monster &Monster::operator=(Monster &&other) noexcept = default;
 
-void Monster::initializeAnimations() {
-    // Basic animation setup for old sprite system
-    currentState = "idle";
-}
-
 void Monster::setPosition(float x, float y) {
     sprite.setPosition(x, y);
 }
 
-sf::Vector2f Monster::getPosition() const {
-    return sprite.getPosition();
-}
+
 
 sf::FloatRect Monster::getBounds() const {
     return sprite.getGlobalBounds();
@@ -82,7 +71,6 @@ void Monster::moveTowards(const sf::Vector2f &target, float deltaTime) {
             
             // Update animation state
             setAnimationState("walk");
-            setDirection(direction);
         }
     } else {
         // In attack range
@@ -133,17 +121,6 @@ void Monster::draw(sf::RenderWindow &window) const {
     window.draw(sprite);
 }
 
-void Monster::checkIfDead() {
-    if (health <= 0) {
-        std::cout << "Monster is dead!" << std::endl;
-    }
-}
-
-void Monster::updateAnimation(float deltaTime) {
-    // Basic animation update for old sprite system
-    (void)deltaTime; // Suppress unused parameter warning
-}
-
 void Monster::setAnimationState(const std::string& state) {
     if (currentState == state) return;
     
@@ -154,42 +131,11 @@ void Monster::setAnimationState(const std::string& state) {
 void Monster::updateMovementAnimation(const sf::Vector2f& direction) {
     if (std::abs(direction.x) > 0.1f || std::abs(direction.y) > 0.1f) {
         setAnimationState("walk");
-        setDirection(direction);
     } else {
         setAnimationState("idle");
     }
 }
 
-void Monster::setDirection(const sf::Vector2f& direction) {
-    if (std::abs(direction.x) > std::abs(direction.y)) {
-        // Horizontal movement
-        if (direction.x > 0) {
-            // Face right
-        } else {
-            // Face left
-        }
-    } else {
-        // Vertical movement
-        if (direction.y > 0) {
-            // Face down
-        } else {
-            // Face up
-        }
-    }
-}
-
-void Monster::vibrateAttack() {
-    if (vibrateCooldown.getElapsedTime().asSeconds() < 0.1f) return;
-    
-    // Add a small random offset to create vibration effect
-    float offsetX = (rand() % 6 - 3) * 0.5f;
-    float offsetY = (rand() % 6 - 3) * 0.5f;
-    
-    sf::Vector2f currentPos = sprite.getPosition();
-    sprite.setPosition(currentPos.x + offsetX, currentPos.y + offsetY);
-    
-    vibrateCooldown.restart();
-}
 
 std::ostream &operator<<(std::ostream &os, const Monster &monster) {
     os << "Monster - Health: " << monster.getHealth() << "/" << monster.getMaxHealth()

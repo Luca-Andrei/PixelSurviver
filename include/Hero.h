@@ -34,10 +34,8 @@ public:
 
     void setPosition(float x, float y);
     void move(float offsetX, float offsetY);
-    sf::Vector2f getPosition() const;
     sf::FloatRect getBounds() const;
 
-    void updateAnimation(float deltaTime);
     void updateMovementAnimation(const sf::Vector2f& movement);
     void setDirection(const sf::Vector2f& direction);
     void setAnimationState(const std::string& state);

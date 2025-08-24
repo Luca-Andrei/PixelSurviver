@@ -2,9 +2,9 @@
 #include <iostream>
 #include <cmath>
 
-Ability::Ability(const std::vector<std::string> &textureFiles, float animationSpeed)
-    : animationSpeed(animationSpeed), currentState("idle"), active(false), 
-      hasDealtDamage(false), damageRadius(500.0f), duration(6.0f), currentDuration(0.0f) {
+Ability::Ability(const std::vector<std::string> &textureFiles)
+    : currentState("idle"), active(false), 
+      duration(6.0f), currentDuration(0.0f) {
     
     initializeAnimations(textureFiles);
 }
@@ -37,14 +37,13 @@ void Ability::initializeAnimations(const std::vector<std::string>& textureFiles)
 void Ability::trigger(const sf::Vector2f &position) {
     this->position = position;
     active = true;
-    hasDealtDamage = false;
     currentDuration = 0.0f;
     
     // Set position and play cast animation
     // Center the ability at the cursor position
     // Use the scaled dimensions: original texture size * scale
-    float scaledWidth = textures[0].getSize().x * 15.0f;
-    float scaledHeight = textures[0].getSize().y * 15.0f;
+    float scaledWidth = static_cast<float>(textures[0].getSize().x) * 15.0f;
+    float scaledHeight = static_cast<float>(textures[0].getSize().y) * 15.0f;
     sprite.setPosition(position.x - (scaledWidth / 2), 
                       position.y - (scaledHeight / 2));
     setAnimationState("cast");
@@ -63,28 +62,12 @@ sf::Vector2f Ability::getPosition() const {
 void Ability::update() {
     if (!active) return;
     
-    // Update animation
-    updateAnimation(1.0f / 60.0f); // Assuming 60 FPS
-    
-    // Update ability logic
-    updateAbilityLogic(1.0f / 60.0f);
-    
     // Check if ability duration has expired
     currentDuration += 1.0f / 60.0f;
     if (currentDuration >= duration) {
         active = false;
         setAnimationState("idle");
     }
-}
-
-void Ability::updateAbilityLogic(float deltaTime) {
-    (void)deltaTime; // Suppress unused parameter warning
-    // Add any additional ability logic here
-    // For example, expanding damage radius, moving projectiles, etc.
-}
-
-bool Ability::isActive() const {
-    return active;
 }
 
 void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
@@ -118,13 +101,8 @@ void Ability::draw(sf::RenderWindow &window) const {
     window.draw(sprite);
 }
 
-void Ability::dealDamage(Monster &monster) {
+static void Ability::dealDamage(Monster &monster) {
     monster.takeDamage(25); // Base damage
-}
-
-void Ability::updateAnimation(float deltaTime) {
-    // Basic animation update for old sprite system
-    (void)deltaTime; // Suppress unused parameter warning
 }
 
 void Ability::setAnimationState(const std::string& state) {

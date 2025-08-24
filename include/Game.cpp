@@ -15,7 +15,7 @@ Game::Game() : gameOver(false), isPaused(false), window(sf::VideoMode(1200, 800)
     cameraView = window.getDefaultView();
     
     // Load textures
-    if (!heroTexture.loadFromFile("../assets/hero_texture.png")) {
+    if (!heroTexture.loadFromFile("assets/hero_texture.png")) {
         std::cerr << "Failed to load hero texture!" << std::endl;
     } else {
         // Set hero texture after loading
@@ -24,34 +24,30 @@ Game::Game() : gameOver(false), isPaused(false), window(sf::VideoMode(1200, 800)
         hero.getSprite().setScale(0.1f, 0.1f);
     }
     
-    if (!monsterTexture.loadFromFile("../assets/monster_texture.png")) {
+    if (!monsterTexture.loadFromFile("assets/monster_texture.png")) {
         std::cerr << "Failed to load monster texture!" << std::endl;
     }
     
-    if (!grassTexture.loadFromFile("../assets/grass.png")) {
+    if (!grassTexture.loadFromFile("assets/grass.png")) {
         std::cerr << "Failed to load grass texture!" << std::endl;
     }
     
-    if (!restartTexture.loadFromFile("../assets/restartbtn.png")) {
+    if (!restartTexture.loadFromFile("assets/restartbtn.png")) {
         std::cerr << "Failed to load restart button texture!" << std::endl;
     }
     
     // Load font
-    if (!font.loadFromFile("../assets/timerfont.ttf")) {
-        std::cerr << "Failed to load font! Using system font." << std::endl;
-        // Try to load a system font as fallback
-        if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf")) {
-            std::cerr << "Failed to load system font as well!" << std::endl;
-        }
+    if (!font.loadFromFile("assets/timerfont.ttf")) {
+        std::cerr << "Failed to load font!" << std::endl;
     }
     
     // Set up hero
-    hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - hero.getBounds().width / 2,
-                     static_cast<float>(window.getSize().y) / 2.f - hero.getBounds().height / 2);
+    hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - static_cast<float>(hero.getBounds().width) / 2,
+                     static_cast<float>(window.getSize().y) / 2.f - static_cast<float>(hero.getBounds().height) / 2);
     
     // Set up camera
-    cameraView.setCenter(hero.getPosition().x + hero.getBounds().width / 2,
-                         hero.getPosition().y + hero.getBounds().height / 2);
+    cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
+                         hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
     // Set up UI elements
     timerText.setFont(font);
@@ -68,24 +64,24 @@ Game::Game() : gameOver(false), isPaused(false), window(sf::VideoMode(1200, 800)
     
     // Set up XP bar at the bottom
     xpBar.setSize(sf::Vector2f(200, 20));
-    xpBar.setPosition(10, window.getSize().y - 40);
+    xpBar.setPosition(10, static_cast<float>(window.getSize().y) - 40.0f);
     xpBar.setFillColor(sf::Color::Transparent);
     xpBar.setOutlineColor(sf::Color::White);
     xpBar.setOutlineThickness(2);
     
     xpFill.setSize(sf::Vector2f(0, 18)); // Start with 0 XP
-    xpFill.setPosition(11, window.getSize().y - 39);
+    xpFill.setPosition(11, static_cast<float>(window.getSize().y) - 39.0f);
     xpFill.setFillColor(sf::Color::Green);
     
     // Initialize XP bar to show current XP (should be 0 at start)
     float initialXpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
-    xpFill.setSize(sf::Vector2f(xpBar.getSize().x * initialXpPercentage, xpFill.getSize().y));
+    xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * initialXpPercentage, 18.0f));
     
     // Set up level text
     levelText.setFont(font);
     levelText.setCharacterSize(18);
     levelText.setFillColor(sf::Color::Yellow);
-    levelText.setPosition(220, window.getSize().y - 40);
+    levelText.setPosition(220, static_cast<float>(window.getSize().y) - 40.0f);
     
     // Set up grass background
     grassBackground.setSize(sf::Vector2f(2000, 2000));
@@ -203,24 +199,24 @@ Game &Game::operator=(Game &&other) noexcept {
         fireballs = std::move(other.fireballs);
         monsterContainer = std::move(other.monsterContainer);
         abilityContainer = std::move(other.abilityContainer);
-        cameraView = std::move(other.cameraView);
-        font = std::move(other.font);
-        timerText = std::move(other.timerText);
-        levelText = std::move(other.levelText);
-        restartButton = std::move(other.restartButton);
-        abilityUI = std::move(other.abilityUI);
-        xpBar = std::move(other.xpBar);
-        xpFill = std::move(other.xpFill);
-        grassBackground = std::move(other.grassBackground);
-        restartTexture = std::move(other.restartTexture);
-        heroTexture = std::move(other.heroTexture);
-        monsterTexture = std::move(other.monsterTexture);
-        grassTexture = std::move(other.grassTexture);
-        fireballIconTexture = std::move(other.fireballIconTexture);
-        fireballIconSprite = std::move(other.fireballIconSprite);
-        gameClock = std::move(other.gameClock);
-        spawnClock = std::move(other.spawnClock);
-        fireballCooldown = std::move(other.fireballCooldown);
+        cameraView = other.cameraView;
+        font = other.font;
+        timerText = other.timerText;
+        levelText = other.levelText;
+        restartButton = other.restartButton;
+        abilityUI = other.abilityUI;
+        xpBar = other.xpBar;
+        xpFill = other.xpFill;
+        grassBackground = other.grassBackground;
+        restartTexture = other.restartTexture;
+        heroTexture = other.heroTexture;
+        monsterTexture = other.monsterTexture;
+        grassTexture = other.grassTexture;
+        fireballIconTexture = other.fireballIconTexture;
+        fireballIconSprite = other.fireballIconSprite;
+        gameClock = other.gameClock;
+        spawnClock = other.spawnClock;
+        fireballCooldown = other.fireballCooldown;
         spawnRadius = other.spawnRadius;
         abilityCK = other.abilityCK;
         showingAbilitySelection = other.showingAbilitySelection;
@@ -235,7 +231,7 @@ Game &Game::operator=(Game &&other) noexcept {
     return *this;
 }
 
-Game::Game(const Game &other) : gameOver(other.gameOver), isPaused(other.isPaused),
+Game::Game(const Game &other) : GameSubject(other), gameOver(other.gameOver), isPaused(other.isPaused),
                                   window(sf::VideoMode(1200, 800), "Pixel Survivor"),
                                   hero(other.hero), monsters(other.monsters), fireballs(other.fireballs),
                                   monsterContainer(other.monsterContainer), abilityContainer(other.abilityContainer),
@@ -265,18 +261,18 @@ Game::Game(Game &&other) noexcept : gameOver(other.gameOver), isPaused(other.isP
                                        monsterContainer(std::move(other.monsterContainer)),
                                        abilityContainer(std::move(other.abilityContainer)),
                                        gameLoggers(std::move(other.gameLoggers)),
-                                       cameraView(std::move(other.cameraView)), font(std::move(other.font)),
-                                       timerText(std::move(other.timerText)), levelText(std::move(other.levelText)), restartButton(std::move(other.restartButton)),
-                                       abilityUI(std::move(other.abilityUI)), xpBar(std::move(other.xpBar)),
-                                       xpFill(std::move(other.xpFill)), grassBackground(std::move(other.grassBackground)),
-                                       restartTexture(std::move(other.restartTexture)),
-                                       heroTexture(std::move(other.heroTexture)),
-                                       monsterTexture(std::move(other.monsterTexture)),
-                                       grassTexture(std::move(other.grassTexture)),
-                                       fireballIconTexture(std::move(other.fireballIconTexture)),
-                                       fireballIconSprite(std::move(other.fireballIconSprite)),
-                                       gameClock(std::move(other.gameClock)), spawnClock(std::move(other.spawnClock)),
-                                       fireballCooldown(std::move(other.fireballCooldown)), spawnRadius(other.spawnRadius),
+                                       cameraView(other.cameraView), font(other.font),
+                                       timerText(other.timerText), levelText(other.levelText), restartButton(other.restartButton),
+                                       abilityUI(other.abilityUI), xpBar(other.xpBar),
+                                       xpFill(other.xpFill), grassBackground(other.grassBackground),
+                                       restartTexture(other.restartTexture),
+                                       heroTexture(other.heroTexture),
+                                       monsterTexture(other.monsterTexture),
+                                       grassTexture(other.grassTexture),
+                                       fireballIconTexture(other.fireballIconTexture),
+                                       fireballIconSprite(other.fireballIconSprite),
+                                       gameClock(other.gameClock), spawnClock(other.spawnClock),
+                                       fireballCooldown(other.fireballCooldown), spawnRadius(other.spawnRadius),
                                        abilityCK(other.abilityCK), showingAbilitySelection(other.showingAbilitySelection),
                                        selectedAbilities(std::move(other.selectedAbilities)),
                                        availableAbilities(std::move(other.availableAbilities)),
@@ -488,7 +484,7 @@ void Game::selectAbility(const std::string& abilityType) {
         
         // Update XP bar to reflect new level
         float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
-        xpFill.setSize(sf::Vector2f(xpBar.getSize().x * xpPercentage, xpFill.getSize().y));
+                    xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
         
         unpauseGame();
         
@@ -523,7 +519,11 @@ void Game::renderAbilityUI() {
         abilityText.setFillColor(sf::Color::White);
         
         std::string keyName = getKeyName(abilityKeybinds[abilityName]);
-        abilityText.setString(abilityName + " (" + keyName + ")");
+        std::string abilityString = abilityName;
+        abilityString += " (";
+        abilityString += keyName;
+        abilityString += ")";
+        abilityText.setString(abilityString);
         abilityText.setPosition(abilityUI.getPosition().x + 50, abilityUI.getPosition().y + yOffset + 5);
         window.draw(abilityText);
         
@@ -559,47 +559,20 @@ std::string Game::getKeyName(sf::Keyboard::Key key) {
     }
 }
 
-void Game::handleXP() {
-    try {
-        // Only update XP bar display, don't add XP every frame
-        float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
-        xpFill.setSize(sf::Vector2f(xpBar.getSize().x * xpPercentage, xpFill.getSize().y));
-        
-        // Template Functions: Demonstrate usage with XP data
-        std::vector<int> xpHistory = {hero.getXP(), hero.getMaxXP(), 0};
-        
-        if (!xpHistory.empty()) {
-            int avgXP = calculateAverage(xpHistory);
-            bool hasEnoughXP = anyOf(xpHistory, [](int xp) { return xp >= 100; });
-            
-            // Notify observers about XP changes
-            std::string xpInfo = "Current XP: " + std::to_string(hero.getXP()) + 
-                                ", avg XP: " + std::to_string(avgXP) + 
-                                ", has enough XP: " + (hasEnoughXP ? "true" : "false");
-            notifyObservers("XPChange", xpInfo);
-        }
-        
-    } catch (const std::exception &e) {
-        std::cerr << "Error handling XP: " << e.what() << std::endl;
-    }
-}
+
 
 void Game::update(float deltaTime) {
     if (gameOver || isPaused) return;
     
-    // Update hero
-    hero.updateAnimation(deltaTime);
-    
     // Update camera to follow hero
-    cameraView.setCenter(hero.getPosition().x + hero.getBounds().width / 2,
-                         hero.getPosition().y + hero.getBounds().height / 2);
+    cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
+                         hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
     // Update monsters
     for (auto &monster : monsters) {
         if (monster.getIsDead()) continue;
         
         monster.moveTowards(hero.getPosition(), deltaTime);
-        monster.updateAnimation(deltaTime);
         
         // Check collision with hero
         if (monster.getBounds().intersects(hero.getBounds())) {
@@ -610,7 +583,6 @@ void Game::update(float deltaTime) {
     // Update fireballs
     for (auto &fireball : fireballs) {
         fireball.update();
-        fireball.updateAnimation(deltaTime);
         fireball.checkCollisionWithMonsters(monsters);
     }
     
@@ -623,7 +595,7 @@ void Game::update(float deltaTime) {
             
             // Update XP bar
             float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
-            xpFill.setSize(sf::Vector2f(xpBar.getSize().x * xpPercentage, xpFill.getSize().y));
+            xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
             
             // Check if hero leveled up
             std::cout << "Checking level up: XP=" << hero.getXP() << ", MaxXP=" << hero.getMaxXP() << std::endl;
@@ -637,8 +609,8 @@ void Game::update(float deltaTime) {
                 hero.resetXP();
                 
                 // Update XP bar
-                float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
-                xpFill.setSize(sf::Vector2f(xpBar.getSize().x * xpPercentage, xpFill.getSize().y));
+                xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
+                xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
                 
                 std::cout << "Game should now be paused and ability selection should be visible" << std::endl;
             }
@@ -650,9 +622,6 @@ void Game::update(float deltaTime) {
     }
     
     // Update fireball cooldown (removed abilityCK logic)
-    if (fireballCooldown.getElapsedTime().asSeconds() >= 5.f) {
-        // Cooldown ready
-    }
     
     // Spawn monsters periodically
     if (spawnClock.getElapsedTime().asSeconds() >= 3.f) {
@@ -942,8 +911,8 @@ void Game::restartGame() {
     
     // Reset hero
     hero.reset();
-    hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - hero.getBounds().width / 2,
-                     static_cast<float>(window.getSize().y) / 2.f - hero.getBounds().height / 2);
+    hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - static_cast<float>(hero.getBounds().width) / 2,
+                     static_cast<float>(window.getSize().y) / 2.f - static_cast<float>(hero.getBounds().height) / 2);
     
     // Clear monsters and fireballs
     monsters.clear();
@@ -956,8 +925,8 @@ void Game::restartGame() {
     abilityCK = false;
     
     // Reset camera
-    cameraView.setCenter(hero.getPosition().x + hero.getBounds().width / 2,
-                         hero.getPosition().y + hero.getBounds().height / 2);
+    cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
+                         hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
     // Reset ability selection
     selectedAbilities = {"Fireball"};
@@ -979,16 +948,16 @@ void Game::drawHealthBars() {
         sf::RectangleShape redHealthBar(sf::Vector2f(50.f * heroLostHealthPercentage, 5.f));
         redHealthBar.setFillColor(sf::Color(255, 0, 0));
 
-        float heroXPos = hero.getPosition().x + hero.getBounds().width / 2 - 25.f;
+        float heroXPos = hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2 - 25.f;
         float heroYPos = hero.getPosition().y - 10.f;
 
         greenHealthBar.setPosition(heroXPos, heroYPos);
-        redHealthBar.setPosition(heroXPos + greenHealthBar.getSize().x, heroYPos);
+        redHealthBar.setPosition(heroXPos + static_cast<float>(greenHealthBar.getSize().x), heroYPos);
 
         window.draw(greenHealthBar);
         window.draw(redHealthBar);
 
-        for (auto &monster: monsters) {
+        for (const auto &monster: monsters) {
             if (monster.getIsDead()) continue;
 
             float monsterHealthPercentage = static_cast<float>(monster.getHealth()) / static_cast<float>(monster.
@@ -1001,11 +970,11 @@ void Game::drawHealthBars() {
             sf::RectangleShape monsterRedHealthBar(sf::Vector2f(50.f * monsterLostHealthPercentage, 5.f));
             monsterRedHealthBar.setFillColor(sf::Color(255, 0, 0, 150));
 
-            float monsterXPos = monster.getPosition().x + monster.getBounds().width / 2 - 25.f;
+            float monsterXPos = monster.getPosition().x + static_cast<float>(monster.getBounds().width) / 2 - 25.f;
             float monsterYPos = monster.getPosition().y - 10.f;
 
             monsterGreenHealthBar.setPosition(monsterXPos, monsterYPos);
-            monsterRedHealthBar.setPosition(monsterXPos + monsterGreenHealthBar.getSize().x, monsterYPos);
+            monsterRedHealthBar.setPosition(monsterXPos + static_cast<float>(monsterGreenHealthBar.getSize().x), monsterYPos);
 
             window.draw(monsterGreenHealthBar);
             window.draw(monsterRedHealthBar);
@@ -1015,21 +984,15 @@ void Game::drawHealthBars() {
     }
 }
 
-std::vector<std::string> Game::loadAbilityTextures(const std::string &directory, int numTextures) {
-    std::vector<std::string> textureFiles;
-    
-    for (int i = 1; i <= numTextures; ++i) {
-        std::string fileName = "../assets/" + directory + "/" + directory + " " + 
-                              (i < 10 ? "000" : (i < 100 ? "00" : "0")) + std::to_string(i) + ".png";
-        textureFiles.push_back(fileName);
-    }
-    
-    return textureFiles;
-}
+
 
 sf::Texture Game::loadAbilityIcons(const std::string &directory) {
     sf::Texture iconTexture;
-    std::string iconPath = "../assets/" + directory + "/" + directory + " Icon.PNG";
+    std::string iconPath = "assets/";
+    iconPath += directory;
+    iconPath += "/";
+    iconPath += directory;
+    iconPath += " Icon.PNG";
     
     if (!iconTexture.loadFromFile(iconPath)) {
         std::cerr << "Failed to load icon: " << iconPath << std::endl;
@@ -1045,7 +1008,11 @@ sf::Texture Game::loadAbilityIcons(const std::string &directory) {
 void Game::loadAllAbilityIcons() {
     try {
         for (const auto& abilityName : availableAbilities) {
-            std::string iconPath = "../assets/" + abilityName + "/" + abilityName + " Icon.PNG";
+            std::string iconPath = "assets/";
+            iconPath += abilityName;
+            iconPath += "/";
+            iconPath += abilityName;
+            iconPath += " Icon.PNG";
             sf::Texture iconTexture;
             
             if (iconTexture.loadFromFile(iconPath)) {
