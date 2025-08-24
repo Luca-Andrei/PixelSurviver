@@ -101,7 +101,7 @@ void Ability::draw(sf::RenderWindow &window) const {
     window.draw(sprite);
 }
 
-static void Ability::dealDamage(Monster &monster) {
+void Ability::dealDamage(Monster &monster) {
     monster.takeDamage(25); // Base damage
 }
 
