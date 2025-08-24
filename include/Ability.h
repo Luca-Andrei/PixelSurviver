@@ -8,7 +8,7 @@
 
 class Ability {
 public:
-    Ability(const std::vector<std::string> &textureFiles);
+    explicit Ability(const std::vector<std::string> &textureFiles);
 
     ~Ability();
 
@@ -28,7 +28,6 @@ public:
 
     static void dealDamage(Monster &monster);
     
-    // Basic animation control
     void setAnimationState(const std::string& state);
     sf::FloatRect getBounds() const;
 
@@ -41,7 +40,6 @@ private:
     sf::Clock animationClock;
     sf::Clock stateTimer;
     
-    // Ability properties
     float duration;
     float currentDuration;
     

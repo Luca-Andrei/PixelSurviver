@@ -1,8 +1,8 @@
 #include "GameLogger.h"
+#include <iostream>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
-#include <memory>
 
 GameLogger::GameLogger(std::string filename, bool console)
     : logFileName(std::move(filename)), consoleOutput(console) {
@@ -17,22 +17,18 @@ GameLogger::~GameLogger() {
 
 GameLogger::GameLogger(const GameLogger &other)
     : logFileName(other.logFileName), consoleOutput(other.consoleOutput) {
-    // Open a new file stream with the same filename
     logFile.open(logFileName, std::ios::app);
 }
 
 GameLogger &GameLogger::operator=(const GameLogger &other) {
     if (this != &other) {
-        // Close current file if open
-        if (logFile.is_open()) {
-            logFile.close();
-        }
+            if (logFile.is_open()) {
+        logFile.close();
+    }
 
-        // Copy member variables
         logFileName = other.logFileName;
         consoleOutput = other.consoleOutput;
 
-        // Open new file stream
         logFile.open(logFileName, std::ios::app);
     }
     return *this;

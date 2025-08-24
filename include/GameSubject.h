@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <algorithm>
 #include "GameObserver.h"
 
 class GameSubject {
@@ -18,15 +17,14 @@ protected:
     std::vector<GameObserver*> observers;
 };
 
-// Implement the methods inline
 inline void GameSubject::addObserver(GameObserver* observer) {
-    if (observer && std::find(observers.begin(), observers.end(), observer) == observers.end()) {
+    if (observer && std::ranges::find(observers, observer) == observers.end()) {
         observers.push_back(observer);
     }
 }
 
 inline void GameSubject::removeObserver(GameObserver* observer) {
-    auto it = std::find(observers.begin(), observers.end(), observer);
+    auto it = std::ranges::find(observers, observer);
     if (it != observers.end()) {
         observers.erase(it);
     }
@@ -40,4 +38,4 @@ inline void GameSubject::notifyObservers(const std::string& eventType, const std
     }
 }
 
-#endif // GAMESUBJECT_H
+#endif

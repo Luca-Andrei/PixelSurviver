@@ -1,6 +1,5 @@
 #include "Ability.h"
 #include <iostream>
-#include <cmath>
 
 Ability::Ability(const std::vector<std::string> &textureFiles)
     : currentState("idle"), active(false), 
@@ -13,7 +12,6 @@ Ability::~Ability() = default;
 
 void Ability::initializeAnimations(const std::vector<std::string>& textureFiles) {
     try {
-        // Load textures for old sprite system
         for (const auto& textureFile : textureFiles) {
             sf::Texture texture;
             if (texture.loadFromFile(textureFile)) {
@@ -25,7 +23,6 @@ void Ability::initializeAnimations(const std::vector<std::string>& textureFiles)
         
         if (!textures.empty()) {
             sprite.setTexture(textures[0]);
-            // Set default scale for abilities - half the previous size
             sprite.setScale(15.0f, 15.0f);
         }
         
@@ -39,9 +36,6 @@ void Ability::trigger(const sf::Vector2f &position) {
     active = true;
     currentDuration = 0.0f;
     
-    // Set position and play cast animation
-    // Center the ability at the cursor position
-    // Use the scaled dimensions: original texture size * scale
     float scaledWidth = static_cast<float>(textures[0].getSize().x) * 15.0f;
     float scaledHeight = static_cast<float>(textures[0].getSize().y) * 15.0f;
     sprite.setPosition(position.x - (scaledWidth / 2), 
@@ -62,7 +56,6 @@ sf::Vector2f Ability::getPosition() const {
 void Ability::update() {
     if (!active) return;
     
-    // Check if ability duration has expired
     currentDuration += 1.0f / 60.0f;
     if (currentDuration >= duration) {
         active = false;
@@ -90,7 +83,6 @@ void Ability::checkCollisionWithMonsters(std::vector<Monster> &monsters) {
     }
     
     if (monstersHit > 0) {
-        // Play hit effect
         setAnimationState("idle");
     }
 }
@@ -102,7 +94,7 @@ void Ability::draw(sf::RenderWindow &window) const {
 }
 
 void Ability::dealDamage(Monster &monster) {
-    monster.takeDamage(25); // Base damage
+    monster.takeDamage(25);
 }
 
 void Ability::setAnimationState(const std::string& state) {

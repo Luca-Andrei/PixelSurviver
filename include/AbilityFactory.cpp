@@ -52,7 +52,6 @@ std::unique_ptr<Ability> PlasmaStormCreator::createAbility() {
     return std::make_unique<Ability>(plasmaStormTextures);
 }
 
-// Static member initialization
 std::map<std::string, std::unique_ptr<AbilityCreator>> AbilityFactory::creators;
 bool AbilityFactory::initialized = false;
 
@@ -66,7 +65,6 @@ std::unique_ptr<Ability> AbilityFactory::createAbility(const std::string& abilit
         return it->second->createAbility();
     }
     
-    // Return default fireball if type not found
     return std::make_unique<FireballCreator>()->createAbility();
 }
 

@@ -59,4 +59,4 @@ private:
     std::string message;
 };
 
-#endif // ERROR_H
+#endif

@@ -54,4 +54,4 @@ private:
 
 std::ostream &operator<<(std::ostream &os, const Hero &hero);
 
-#endif // HERO_H
+#endif

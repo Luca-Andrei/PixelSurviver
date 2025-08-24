@@ -16,7 +16,6 @@ Monster::Monster(const std::string &textureFile, int health, int power)
         throw TextureLoadError("Error loading monster texture!");
     }
     sprite.setTexture(texture);
-    // Scale down the monster sprite to a reasonable size
     sprite.setScale(0.1f, 0.1f);
 }
 
@@ -24,7 +23,6 @@ Monster::Monster(const sf::Texture &texture, int health, int power)
     : health(health), maxHealth(health), power(power), isDead(false),
       currentState("idle"), moveSpeed(50.0f), attackRange(30.0f) {
     sprite.setTexture(texture);
-    // Scale down the monster sprite to a reasonable size
     sprite.setScale(0.1f, 0.1f);
 }
 
@@ -37,7 +35,6 @@ Monster::Monster(const Monster &other) = default;
 
 Monster::Monster(Monster &&other) noexcept = default;
 
-// Destructor is defaulted in header
 
 Monster &Monster::operator=(const Monster &other) = default;
 
@@ -58,22 +55,18 @@ void Monster::moveTowards(const sf::Vector2f &target, float deltaTime) {
     
     targetPosition = target;
     
-    // Calculate direction to target
     sf::Vector2f direction = target - sprite.getPosition();
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     
     if (distance > attackRange) {
-        // Normalize direction and move
         if (distance > 0) {
             direction = direction / distance;
             sf::Vector2f newPosition = sprite.getPosition() + direction * moveSpeed * deltaTime;
             sprite.setPosition(newPosition);
             
-            // Update animation state
             setAnimationState("walk");
         }
     } else {
-        // In attack range
         setAnimationState("idle");
     }
     
@@ -85,13 +78,10 @@ void Monster::attack(Hero &hero) {
         return;
     }
     
-    // Play attack animation
     setAnimationState("attack");
     
-    // Deal damage to hero
     hero.takeDamage(power);
     
-    // Reset attack cooldown
     attackCooldown.restart();
     
     std::cout << "Monster attacks hero for " << power << " damage!" << std::endl;
@@ -102,7 +92,6 @@ void Monster::takeDamage(int damage) {
     
     health -= damage;
     
-    // Play hit animation
     setAnimationState("hit");
     
     if (health <= 0) {

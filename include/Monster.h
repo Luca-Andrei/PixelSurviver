@@ -3,9 +3,7 @@
 
 #include "Entity.h"
 #include <SFML/Graphics.hpp>
-#include <vector>
 
-// Forward declaration
 class Hero;
 
 class Monster : public Entity {
@@ -55,4 +53,4 @@ private:
 
 std::ostream &operator<<(std::ostream &os, const Monster &monster);
 
-#endif // MONSTER_H
+#endif

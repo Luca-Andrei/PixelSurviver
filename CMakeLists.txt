@@ -50,6 +50,7 @@ add_executable(oop
         include/GameLogger.cpp
 
         generated/src/Helper.cpp
+        include/GameUtils.h
 )
 
 include(cmake/CompilerFlags.cmake)

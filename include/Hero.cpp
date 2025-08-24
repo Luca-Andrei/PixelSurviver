@@ -14,7 +14,6 @@ Hero::Hero(const Hero &other) = default;
 
 Hero::Hero(Hero &&other) noexcept = default;
 
-// Destructor is defaulted in header
 
 Hero &Hero::operator=(const Hero &other) = default;
 
@@ -22,10 +21,6 @@ Hero &Hero::operator=(Hero &&other) noexcept = default;
 
 void Hero::addXP(int amount) {
     xp.addXP(amount);
-    // Don't auto-level up here - let the Game class handle it
-    // if (xp.getXP() >= xp.getMaxXP()) {
-    //     levelUp();
-    // }
 }
 
 void Hero::levelUp() {
@@ -33,7 +28,6 @@ void Hero::levelUp() {
     maxHealth += 20;
     health = maxHealth;
     
-    // Play level up animation
     setAnimationState("cast");
     
     std::cout << "Hero leveled up! New level: " << xp.getLevel() 
@@ -44,7 +38,6 @@ void Hero::takeDamage(int damage) {
     health -= damage;
     if (health < 0) health = 0;
     
-    // Play hit animation
     setAnimationState("hit");
     
     std::cout << "Hero took " << damage << " damage! Health: " << health << std::endl;
@@ -81,11 +74,10 @@ void Hero::resetXP() {
 }
 
 void Hero::completeLevelUp() {
-    xp.forceLevelUp(); // Force level up without XP condition check
+    xp.forceLevelUp();
     maxHealth += 20;
     health = maxHealth;
     
-    // Play level up animation
     setAnimationState("cast");
     
     std::cout << "Hero completed level up! New level: " << xp.getLevel() 

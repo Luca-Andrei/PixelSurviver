@@ -25,4 +25,4 @@ protected:
 
 std::ostream &operator<<(std::ostream &os, const Entity &entity);
 
-#endif // ENTITY_H
+#endif

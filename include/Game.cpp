@@ -7,20 +7,17 @@
 #include <memory>
 #include "Error.h"
 #include "GameLogger.h"
+#include "GameUtils.h"
 
 Game::Game() : gameOver(false), isPaused(false), window(sf::VideoMode(1200, 800), "Pixel Survivor"),
                 hero(), spawnRadius(200.f), abilityCK(false), showingAbilitySelection(false) {
     
-    // Initialize camera view
     cameraView = window.getDefaultView();
     
-    // Load textures
     if (!heroTexture.loadFromFile("assets/hero_texture.png")) {
         std::cerr << "Failed to load hero texture!" << std::endl;
     } else {
-        // Set hero texture after loading
         hero.getSprite().setTexture(heroTexture);
-        // Scale down the hero sprite to a reasonable size
         hero.getSprite().setScale(0.1f, 0.1f);
     }
     
@@ -36,82 +33,65 @@ Game::Game() : gameOver(false), isPaused(false), window(sf::VideoMode(1200, 800)
         std::cerr << "Failed to load restart button texture!" << std::endl;
     }
     
-    // Load font
     if (!font.loadFromFile("assets/timerfont.ttf")) {
         std::cerr << "Failed to load font!" << std::endl;
     }
     
-    // Set up hero
     hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - static_cast<float>(hero.getBounds().width) / 2,
                      static_cast<float>(window.getSize().y) / 2.f - static_cast<float>(hero.getBounds().height) / 2);
     
-    // Set up camera
     cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
                          hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
-    // Set up UI elements
     timerText.setFont(font);
     timerText.setCharacterSize(24);
     timerText.setFillColor(sf::Color::White);
     timerText.setPosition(10, 10);
     
-    // Set up restart button
     restartButton.setSize(sf::Vector2f(200, 50));
     restartButton.setPosition(500, 400);
     restartButton.setTexture(&restartTexture);
     
-    // Removed ability UI box - keeping only the ability display
-    
-    // Set up XP bar at the bottom
     xpBar.setSize(sf::Vector2f(200, 20));
     xpBar.setPosition(10, static_cast<float>(window.getSize().y) - 40.0f);
     xpBar.setFillColor(sf::Color::Transparent);
     xpBar.setOutlineColor(sf::Color::White);
     xpBar.setOutlineThickness(2);
     
-    xpFill.setSize(sf::Vector2f(0, 18)); // Start with 0 XP
+    xpFill.setSize(sf::Vector2f(0, 18));
     xpFill.setPosition(11, static_cast<float>(window.getSize().y) - 39.0f);
     xpFill.setFillColor(sf::Color::Green);
     
-    // Initialize XP bar to show current XP (should be 0 at start)
     float initialXpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
     xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * initialXpPercentage, 18.0f));
     
-    // Set up level text
     levelText.setFont(font);
     levelText.setCharacterSize(18);
     levelText.setFillColor(sf::Color::Yellow);
     levelText.setPosition(220, static_cast<float>(window.getSize().y) - 40.0f);
     
-    // Set up grass background
     grassBackground.setSize(sf::Vector2f(2000, 2000));
     grassBackground.setPosition(-1000, -1000);
     grassBackground.setTexture(&grassTexture);
     grassBackground.setTextureRect(sf::IntRect(0, 0, 2000, 2000));
     
-    // Initialize ability system
     availableAbilities = {"Fireball", "Ice Spire", "Plasma Storm"};
-    selectedAbilities = {"Fireball"}; // Start with fireball
+    selectedAbilities = {"Fireball"};
     
-    // Set up keybinds
     abilityKeybinds["Fireball"] = sf::Keyboard::Num1;
     abilityKeybinds["Ice Spire"] = sf::Keyboard::Num2;
     abilityKeybinds["Plasma Storm"] = sf::Keyboard::Num3;
     
-    // Initialize cooldowns
     for (const auto& ability : availableAbilities) {
         abilityCooldowns[ability] = sf::Clock();
     }
     
-    // Load all ability icons
     loadAllAbilityIcons();
     
-    // Load fireball icon
     fireballIconTexture = loadAbilityIcons("Fireball");
     fireballIconSprite.setTexture(fireballIconTexture);
     fireballIconSprite.setScale(0.5f, 0.5f);
     
-    // Add observers
     addObserver(new GameLogger());
     
     std::cout << "Game initialized successfully!" << std::endl;
@@ -178,7 +158,6 @@ Game &Game::operator=(const Game &other) {
         abilityKeybinds = other.abilityKeybinds;
         abilityCooldowns = other.abilityCooldowns;
         
-        // Copy observers
         gameLoggers.clear();
         for (const auto& logger : other.gameLoggers) {
             gameLoggers.push_back(std::make_unique<GameLogger>(*logger));
@@ -193,7 +172,6 @@ Game &Game::operator=(Game &&other) noexcept {
     if (this != &other) {
         gameOver = other.gameOver;
         isPaused = other.isPaused;
-        // Note: SFML objects cannot be moved, so we skip window
         hero = std::move(other.hero);
         monsters = std::move(other.monsters);
         fireballs = std::move(other.fireballs);
@@ -247,7 +225,6 @@ Game::Game(const Game &other) : GameSubject(other), gameOver(other.gameOver), is
                                   selectedAbilities(other.selectedAbilities), availableAbilities(other.availableAbilities),
                                   abilityKeybinds(other.abilityKeybinds), abilityCooldowns(other.abilityCooldowns) {
     
-    // Copy observers
     for (const auto& logger : other.gameLoggers) {
         gameLoggers.push_back(std::make_unique<GameLogger>(*logger));
     }
@@ -279,8 +256,6 @@ Game::Game(Game &&other) noexcept : gameOver(other.gameOver), isPaused(other.isP
                                        abilityKeybinds(std::move(other.abilityKeybinds)),
                                        abilityCooldowns(std::move(other.abilityCooldowns)) {
     
-    // SFML objects cannot be moved, so we need to handle them specially
-    // Window will be created in the constructor body
     std::cout << "Game move constructor called." << std::endl;
 }
 
@@ -332,15 +307,14 @@ void Game::showAbilitySelection() {
         window.draw(abilityOption2);
         window.draw(abilityOption3);
 
-        // Add ability names as text
         sf::Text text1, text2, text3;
         text1.setFont(font);
         text2.setFont(font);
         text3.setFont(font);
 
-        text1.setString(availableAbilities[0]); // Fireball
-        text2.setString(availableAbilities[1]); // Ice Spire
-        text3.setString(availableAbilities[2]); // Plasma Storm
+        text1.setString(availableAbilities[0]);
+        text2.setString(availableAbilities[1]);
+        text3.setString(availableAbilities[2]);
 
         text1.setCharacterSize(24);
         text2.setCharacterSize(24);
@@ -350,7 +324,6 @@ void Game::showAbilitySelection() {
         text2.setFillColor(sf::Color::White);
         text3.setFillColor(sf::Color::White);
 
-        // Center text in rectangles
         sf::FloatRect text1Bounds = text1.getLocalBounds();
         sf::FloatRect text2Bounds = text2.getLocalBounds();
         sf::FloatRect text3Bounds = text3.getLocalBounds();
@@ -366,7 +339,6 @@ void Game::showAbilitySelection() {
         window.draw(text2);
         window.draw(text3);
 
-        // Add ability descriptions
         sf::Text desc1, desc2, desc3;
         desc1.setFont(font);
         desc2.setFont(font);
@@ -415,7 +387,6 @@ void Game::processEvents() {
                 }
             }
             
-            // Handle ability selection when paused
             if (isPaused && showingAbilitySelection && event.type == sf::Event::MouseButtonPressed) {
                 std::cout << "Handling ability selection click" << std::endl;
                 handleAbilitySelection(event);
@@ -436,24 +407,22 @@ void Game::handleAbilitySelection(const sf::Event& event) {
         float rectWidth = (windowWidth - 2 * totalHorizontalSpacing) / 3.f - totalHorizontalSpacing / 3.f;
         float spacing = totalHorizontalSpacing / 3.f;
 
-        // Calculate positions for ability options (same as in showAbilitySelection)
         sf::Vector2f option2Pos((windowWidth - rectWidth) / 2.f, (windowHeight - rectHeight) / 2.f);
         sf::Vector2f option1Pos(option2Pos.x - rectWidth - spacing, (windowHeight - rectHeight) / 2.f);
         sf::Vector2f option3Pos(option2Pos.x + rectWidth + spacing, (windowHeight - rectHeight) / 2.f);
 
         sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
 
-        // Check which ability was clicked
         sf::FloatRect option1Bounds(option1Pos.x, option1Pos.y, rectWidth, rectHeight);
         sf::FloatRect option2Bounds(option2Pos.x, option2Pos.y, rectWidth, rectHeight);
         sf::FloatRect option3Bounds(option3Pos.x, option3Pos.y, rectWidth, rectHeight);
 
         if (option1Bounds.contains(mousePos)) {
-            selectAbility(availableAbilities[0]); // Fireball
+            selectAbility(availableAbilities[0]);
         } else if (option2Bounds.contains(mousePos)) {
-            selectAbility(availableAbilities[1]); // Ice Spire
+            selectAbility(availableAbilities[1]);
         } else if (option3Bounds.contains(mousePos)) {
-            selectAbility(availableAbilities[2]); // Plasma Storm
+            selectAbility(availableAbilities[2]);
         }
     } catch (const std::exception &e) {
         std::cerr << "Error handling ability selection: " << e.what() << std::endl;
@@ -462,7 +431,6 @@ void Game::handleAbilitySelection(const sf::Event& event) {
 
 void Game::addAbilityToPool(const std::string& abilityType) {
     try {
-        // Check if ability is already in the pool
         if (std::find(selectedAbilities.begin(), selectedAbilities.end(), abilityType) == selectedAbilities.end()) {
             selectedAbilities.push_back(abilityType);
             std::cout << "Added " << abilityType << " to ability pool. Total abilities: " << selectedAbilities.size() << std::endl;
@@ -479,16 +447,13 @@ void Game::selectAbility(const std::string& abilityType) {
         addAbilityToPool(abilityType);
         showingAbilitySelection = false;
         
-        // Complete the level up process
         hero.completeLevelUp();
         
-        // Update XP bar to reflect new level
         float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
                     xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
         
         unpauseGame();
         
-        // Notify observers about ability selection
         notifyObservers("AbilitySelected", "Player added ability to pool: " + abilityType);
         
         std::cout << "Added ability to pool: " << abilityType << std::endl;
@@ -499,20 +464,16 @@ void Game::selectAbility(const std::string& abilityType) {
 }
 
 void Game::renderAbilityUI() {
-    // Don't draw the ability UI box background anymore
     
-            // Draw selected abilities with their keybinds
-        float yOffset = 20.0f;
+            float yOffset = 20.0f;
         for (const auto& abilityName : selectedAbilities) {
-            // Use pre-loaded ability icon
             if (abilityIcons.find(abilityName) != abilityIcons.end()) {
                 sf::Sprite iconSprite(abilityIcons[abilityName]);
-                iconSprite.setScale(0.8f, 0.8f); // Made icons bigger (was 0.3f)
+                iconSprite.setScale(0.8f, 0.8f);
                 iconSprite.setPosition(abilityUI.getPosition().x + 10, abilityUI.getPosition().y + yOffset);
                 window.draw(iconSprite);
             }
         
-        // Draw ability name and keybind
         sf::Text abilityText;
         abilityText.setFont(font);
         abilityText.setCharacterSize(16);
@@ -527,10 +488,9 @@ void Game::renderAbilityUI() {
         abilityText.setPosition(abilityUI.getPosition().x + 50, abilityUI.getPosition().y + yOffset + 5);
         window.draw(abilityText);
         
-        // Draw cooldown indicator
         if (abilityCooldowns.find(abilityName) != abilityCooldowns.end()) {
             float cooldownTime = abilityCooldowns[abilityName].getElapsedTime().asSeconds();
-            float cooldownProgress = std::min(cooldownTime / 5.0f, 1.0f); // 5 second cooldown
+            float cooldownProgress = std::min(cooldownTime / 5.0f, 1.0f);
             
             sf::RectangleShape cooldownBar;
             cooldownBar.setSize(sf::Vector2f(80 * (1.0f - cooldownProgress), 4));
@@ -564,40 +524,32 @@ std::string Game::getKeyName(sf::Keyboard::Key key) {
 void Game::update(float deltaTime) {
     if (gameOver || isPaused) return;
     
-    // Update camera to follow hero
     cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
                          hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
-    // Update monsters
     for (auto &monster : monsters) {
         if (monster.getIsDead()) continue;
         
         monster.moveTowards(hero.getPosition(), deltaTime);
         
-        // Check collision with hero
         if (monster.getBounds().intersects(hero.getBounds())) {
             monster.attack(hero);
         }
     }
 
-    // Update fireballs
     for (auto &fireball : fireballs) {
         fireball.update();
         fireball.checkCollisionWithMonsters(monsters);
     }
     
-    // Check for dead monsters and give XP
     for (auto it = monsters.begin(); it != monsters.end();) {
         if (it->getIsDead()) {
-            // Give XP for killing monster
             hero.addXP(10);
             std::cout << "Monster killed! Current XP: " << hero.getXP() << "/" << hero.getMaxXP() << std::endl;
             
-            // Update XP bar
             float xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
             xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
             
-            // Check if hero leveled up
             std::cout << "Checking level up: XP=" << hero.getXP() << ", MaxXP=" << hero.getMaxXP() << std::endl;
             if (hero.getXP() >= hero.getMaxXP()) {
                 std::cout << "Hero leveled up! XP: " << hero.getXP() << "/" << hero.getMaxXP() << std::endl;
@@ -605,10 +557,8 @@ void Game::update(float deltaTime) {
                 pauseGame();
                 showingAbilitySelection = true;
                 
-                // Reset XP to 0 for next level
                 hero.resetXP();
                 
-                // Update XP bar
                 xpPercentage = static_cast<float>(hero.getXP()) / static_cast<float>(hero.getMaxXP());
                 xpFill.setSize(sf::Vector2f(static_cast<float>(xpBar.getSize().x) * xpPercentage, 18.0f));
                 
@@ -621,18 +571,13 @@ void Game::update(float deltaTime) {
         }
     }
     
-    // Update fireball cooldown (removed abilityCK logic)
-    
-    // Spawn monsters periodically
     if (spawnClock.getElapsedTime().asSeconds() >= 3.f) {
         spawnMonsters();
         spawnClock.restart();
     }
     
-    // Handle player input for abilities
     attackMonsters();
     
-    // Handle hero movement
     handleHeroMovement();
 }
 
@@ -658,15 +603,12 @@ void Game::spawnMonsters() {
 
             monsters.emplace_back(monsterTexture, 50, 5);
             monsters.back().setPosition(x, y);
-            // Scale down the monster sprite to a reasonable size
             monsters.back().getSprite().setScale(0.1f, 0.1f);
             
-            // Template Class: Add monster to container
             auto monsterPtr = std::make_unique<Monster>(monsters.back());
             monsterContainer.addItem(std::move(monsterPtr));
         }
         
-        // Template Functions: Demonstrate usage
         std::vector<int> monsterHealths;
         for (const auto& monster : monsters) {
             monsterHealths.push_back(monster.getHealth());
@@ -676,7 +618,6 @@ void Game::spawnMonsters() {
             int avgHealth = calculateAverage(monsterHealths);
             int maxHealth = findMax(monsterHealths, [](int a, int b) { return a < b; });
             
-            // Notify observers about monster spawn with template function results
             std::string spawnInfo = "Spawned " + std::to_string(numMonsters) + 
                                    " monsters, avg health: " + std::to_string(avgHealth) + 
                                    ", max health: " + std::to_string(maxHealth);
@@ -691,67 +632,53 @@ void Game::spawnMonsters() {
 
 void Game::attackMonsters() {
     try {
-        // Check for mouse click to use primary ability (first in pool)
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             if (!selectedAbilities.empty()) {
                 std::string primaryAbility = selectedAbilities[0];
                 
-                // Check individual cooldown for this ability
                 if (abilityCooldowns.find(primaryAbility) != abilityCooldowns.end() && 
                     abilityCooldowns[primaryAbility].getElapsedTime().asSeconds() >= 5.f) {
                     
                     std::cout << primaryAbility << " used against enemies!" << std::endl;
                     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                     
-                    // Factory Pattern: Create ability using factory
                     auto ability = AbilityFactory::createAbility(primaryAbility);
                     ability->trigger(mousePos);
                     
-                    // Add to fireballs vector first
                     fireballs.emplace_back(*ability);
                     
-                    // Template Class: Add to container
                     abilityContainer.addItem(std::move(ability));
                     
-                    // Restart only this ability's cooldown
                     abilityCooldowns[primaryAbility].restart();
                     
-                    // Notify observers
                     notifyObservers("AbilityUsed", primaryAbility + " ability triggered at position " + 
                                   std::to_string(mousePos.x) + ", " + std::to_string(mousePos.y));
                 }
             }
         }
         
-        // Check for number key presses to use specific abilities
         for (const auto& abilityName : selectedAbilities) {
             if (abilityKeybinds.find(abilityName) != abilityKeybinds.end()) {
                 sf::Keyboard::Key key = abilityKeybinds[abilityName];
                 if (sf::Keyboard::isKeyPressed(key)) {
-                    // Check individual cooldown for this ability
                     if (abilityCooldowns.find(abilityName) != abilityCooldowns.end() && 
                         abilityCooldowns[abilityName].getElapsedTime().asSeconds() >= 5.f) {
                         
                         std::cout << abilityName << " used against enemies!" << std::endl;
                         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                         
-                        // Factory Pattern: Create ability using factory
                         auto ability = AbilityFactory::createAbility(abilityName);
                         ability->trigger(mousePos);
                         
-                        // Add to fireballs vector first
                         fireballs.emplace_back(*ability);
                         
-                        // Template Class: Add to container
                         abilityContainer.addItem(std::move(ability));
                         
-                        // Restart only this ability's cooldown
                         abilityCooldowns[abilityName].restart();
                         
-                        // Notify observers
                         notifyObservers("AbilityUsed", abilityName + " ability triggered at position " + 
                                       std::to_string(mousePos.x) + ", " + std::to_string(mousePos.y));
-                        break; // Only use one ability per frame
+                        break;
                     }
                 }
             }
@@ -763,10 +690,9 @@ void Game::attackMonsters() {
 
 void Game::handleHeroMovement() {
     try {
-        float moveSpeed = 25.0f; // Pixels per second (half the previous speed)
-        float deltaTime = 1.0f / 60.0f; // Assuming 60 FPS
+        float moveSpeed = 25.0f;
+        float deltaTime = 1.0f / 60.0f;
         
-        // Handle WASD movement
         sf::Vector2f movement(0.0f, 0.0f);
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -782,20 +708,16 @@ void Game::handleHeroMovement() {
             movement.x += 1.0f;
         }
         
-        // Normalize diagonal movement
         if (movement.x != 0.0f && movement.y != 0.0f) {
             movement = movement / std::sqrt(2.0f);
         }
         
-        // Apply movement
         if (movement.x != 0.0f || movement.y != 0.0f) {
             sf::Vector2f newPosition = hero.getPosition() + movement * moveSpeed * deltaTime;
             hero.setPosition(newPosition.x, newPosition.y);
             
-            // Update hero animation state
             hero.updateMovementAnimation(movement);
         } else {
-            // No movement, set to idle
             hero.setAnimationState("idle");
         }
         
@@ -845,14 +767,12 @@ void Game::render() {
 
         window.setView(window.getDefaultView());
 
-        // Render ability UI showing all selected abilities
         renderAbilityUI();
 
         window.draw(timerText);
         window.draw(xpBar);
         window.draw(xpFill);
         
-        // Update and draw level text
         levelText.setString("Level: " + std::to_string(hero.getLevel()));
         window.draw(levelText);
 
@@ -889,7 +809,6 @@ void Game::render() {
             pauseText.setPosition((static_cast<float>(window.getSize().x) - pauseTextWidth) / 2.f, 20.f);
             window.draw(pauseText);
             
-            // Show ability selection screen
             showAbilitySelection();
             
             window.display();
@@ -909,26 +828,21 @@ void Game::restartGame() {
     gameOver = false;
     isPaused = false;
     
-    // Reset hero
     hero.reset();
     hero.setPosition(static_cast<float>(window.getSize().x) / 2.f - static_cast<float>(hero.getBounds().width) / 2,
                      static_cast<float>(window.getSize().y) / 2.f - static_cast<float>(hero.getBounds().height) / 2);
     
-    // Clear monsters and fireballs
     monsters.clear();
     fireballs.clear();
     
-    // Reset game state
     gameClock.restart();
     spawnClock.restart();
     fireballCooldown.restart();
     abilityCK = false;
     
-    // Reset camera
     cameraView.setCenter(hero.getPosition().x + static_cast<float>(hero.getBounds().width) / 2,
                          hero.getPosition().y + static_cast<float>(hero.getBounds().height) / 2);
     
-    // Reset ability selection
     selectedAbilities = {"Fireball"};
     for (auto& cooldown : abilityCooldowns) {
         cooldown.second.restart();
@@ -994,13 +908,12 @@ sf::Texture Game::loadAbilityIcons(const std::string &directory) {
     iconPath += directory;
     iconPath += " Icon.PNG";
     
-    if (!iconTexture.loadFromFile(iconPath)) {
-        std::cerr << "Failed to load icon: " << iconPath << std::endl;
-        // Create a fallback colored rectangle texture
-        sf::Image fallbackImage;
-        fallbackImage.create(32, 32, sf::Color::Magenta);
-        iconTexture.loadFromImage(fallbackImage);
-    }
+            if (!iconTexture.loadFromFile(iconPath)) {
+            std::cerr << "Failed to load icon: " << iconPath << std::endl;
+            sf::Image fallbackImage;
+            fallbackImage.create(32, 32, sf::Color::Magenta);
+            iconTexture.loadFromImage(fallbackImage);
+        }
     
     return iconTexture;
 }
@@ -1020,7 +933,6 @@ void Game::loadAllAbilityIcons() {
                 std::cout << "Loaded icon for " << abilityName << std::endl;
             } else {
                 std::cerr << "Failed to load icon for " << abilityName << " from " << iconPath << std::endl;
-                // Create a fallback colored rectangle texture
                 sf::Image fallbackImage;
                 fallbackImage.create(32, 32, sf::Color::Magenta);
                 iconTexture.loadFromImage(fallbackImage);
@@ -1037,7 +949,6 @@ Game::~Game() {
     try {
         std::cout << "Game destructor called." << std::endl;
 
-        // Clean up textures
         heroTexture = sf::Texture();
         std::cout << "Hero texture dropped." << std::endl;
         monsterTexture = sf::Texture();
@@ -1047,11 +958,9 @@ Game::~Game() {
         restartButton = sf::RectangleShape();
         std::cout << "Restart button texture dropped and reset." << std::endl;
 
-        // Clean up other resources
         fireballs.clear();
         std::cout << "Fireballs cleared." << std::endl;
         
-        // Clean up observers
         gameLoggers.clear();
         std::cout << "Game loggers cleared." << std::endl;
         
@@ -1062,7 +971,6 @@ Game::~Game() {
     }
 }
 
-// Observer pattern implementations
 void Game::addObserver(GameObserver* observer) {
     GameSubject::addObserver(observer);
 }

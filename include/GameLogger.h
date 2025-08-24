@@ -2,12 +2,9 @@
 #define GAMELOGGER_H
 
 #include "GameObserver.h"
-#include <iostream>
 #include <fstream>
 #include <string>
-#include <memory>
 
-// Concrete Observer - Game Logger
 class GameLogger : public GameObserver {
 private:
     std::ofstream logFile;
@@ -25,12 +22,11 @@ public:
 
     void onGameEvent(const std::string &eventType, const std::string &eventData) override;
 
-    void setConsoleOutput(bool enable) { consoleOutput = enable; }
-    bool isConsoleEnabled() const { return consoleOutput; }
+
 
     void logToFile(const std::string &message);
 
     static void logToConsole(const std::string &message);
 };
 
-#endif // GAMELOGGER_H
+#endif
