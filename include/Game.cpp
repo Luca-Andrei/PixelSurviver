@@ -579,6 +579,11 @@ void Game::update(float deltaTime) {
     attackMonsters();
     
     handleHeroMovement();
+    
+    if (!hero.isAlive()) {
+        gameOver = true;
+        std::cout << "Game Over! Hero has died!" << std::endl;
+    }
 }
 
 void Game::spawnMonsters() {

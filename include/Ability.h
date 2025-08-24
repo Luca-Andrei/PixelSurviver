@@ -12,7 +12,7 @@ public:
 
     ~Ability();
 
-    void trigger(const sf::Vector2f &position);
+    void trigger(const sf::Vector2f &pos);
 
     void setPosition(float x, float y);
 

@@ -31,18 +31,18 @@ void Ability::initializeAnimations(const std::vector<std::string>& textureFiles)
     }
 }
 
-void Ability::trigger(const sf::Vector2f &position) {
-    this->position = position;
+void Ability::trigger(const sf::Vector2f &pos) {
+    this->position = pos;
     active = true;
     currentDuration = 0.0f;
     
     float scaledWidth = static_cast<float>(textures[0].getSize().x) * 15.0f;
     float scaledHeight = static_cast<float>(textures[0].getSize().y) * 15.0f;
-    sprite.setPosition(position.x - (scaledWidth / 2), 
-                      position.y - (scaledHeight / 2));
+    sprite.setPosition(pos.x - (scaledWidth / 2), 
+                      pos.y - (scaledHeight / 2));
     setAnimationState("cast");
     
-    std::cout << "Ability triggered at position (" << position.x << ", " << position.y << ")" << std::endl;
+    std::cout << "Ability triggered at position (" << pos.x << ", " << pos.y << ")" << std::endl;
 }
 
 void Ability::setPosition(float x, float y) {
