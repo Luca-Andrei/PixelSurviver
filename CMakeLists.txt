@@ -90,4 +90,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 )
 
 # Copy tastatura.txt
+copy_files(FILES tastatura.txt DIRECTORY assets)
+
 configure_file(${CMAKE_SOURCE_DIR}/tastatura.txt ${CMAKE_BINARY_DIR}/tastatura.txt COPYONLY)
